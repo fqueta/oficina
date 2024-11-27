@@ -197,11 +197,11 @@ class OrcamentoController extends Controller
                 $texto_termo_assinado = Qlib::update_postmeta($post_id,'texto_termo_assinado',Qlib::lib_array_json([
                     'texto' => $this->get_termo_texto(),
                 ]));
+                //salvar assinatura e
                 if($texto_termo_assinado){
                     $ret['exec'] = true;
                 }
             }
-            //salvar assinatura e
         }
         return $ret;
     }

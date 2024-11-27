@@ -125,7 +125,7 @@
     $ddi_padrao = 55;
 @endphp
 <div class="row">
-    <div class="col-12 mt-4">
+    <div class="col-12 mt-5 mb-5">
         <form class="form-acjf" action="/ajax/get-rab" id="form-agendamento" action="">
             <h3 class="form-subtitle">Preencha com suas informações de contato:</h3>
             <fieldset class="personal-info">
