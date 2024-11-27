@@ -19,3 +19,4 @@ servidor.txt
 Detalhes do projeto
 det_projeto
 install_supervisor.txt
+/app/Http/Controllers/EmailController.php
