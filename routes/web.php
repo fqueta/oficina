@@ -117,6 +117,9 @@ Route::prefix('admin')->group(function(){
     Route::resource('produtos','\App\Http\Controllers\admin\PostController',['parameters' => [
         'produtos' => 'id'
     ]]);
+    Route::resource('orcamentos','\App\Http\Controllers\admin\PostController',['parameters' => [
+        'orcamentos' => 'id'
+    ]]);
     Route::resource('media','\App\Http\Controllers\admin\mediaController',['parameters' => [
         'media' => 'id'
     ]]);

@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         $arr = [
             [
                 'name' => 'Fernando Queta',
-            'email' => 'quetafernando1@gmail.com',
+                'email' => 'quetafernando1@gmail.com',
                 'password' => Hash::make('ferqueta'),
                 'status' => 'actived',
                 'verificado' => 's',

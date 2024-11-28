@@ -27,7 +27,7 @@ class MenuSeeder extends Seeder
             ],
             [
                 'categoria'=>'CADASTROS',
-                'description'=>'Contratos',
+                'description'=>'Ordem de serviços',
                 'icon'=>'fas fa-box',
                 'actived'=>true,
                 'url'=>'cad-produtos',
@@ -36,16 +36,16 @@ class MenuSeeder extends Seeder
             ],
             [
                 'categoria'=>'',
-                'description'=>'Novo contrato',
+                'description'=>'Nova ordem',
                 'icon'=>'fas fa-plus',
                 'actived'=>true,
-                'url'=>'create',
+                'url'=>'os',
                 'route'=>'produtos.create',
                 'pai'=>'cad-produtos'
             ],
             [
                 'categoria'=>'',
-                'description'=>'Todos contratos',
+                'description'=>'Todas OS',
                 'icon'=>'fas fa-list',
                 'actived'=>true,
                 'url'=>'produtos',
@@ -55,7 +55,7 @@ class MenuSeeder extends Seeder
             [
                 'categoria'=>'',
                 'description'=>'Orçamentos',
-                'icon'=>'fas fa-file',
+                'icon'=>'fas fa-file-excel',
                 'actived'=>true,
                 'url'=>'cad-orcamentos',
                 'route'=>'',
@@ -63,11 +63,11 @@ class MenuSeeder extends Seeder
             ],
             [
                 'categoria'=>'',
-                'description'=>'Novo Leilão',
+                'description'=>'Novo orçamento',
                 'icon'=>'fas fa-plus',
                 'actived'=>true,
-                'url'=>'create',
-                'route'=>'quick.add.leilao',
+                'url'=>'orcamento',
+                'route'=>'orcamentos.create',
                 'pai'=>'cad-orcamentos'
             ],
             [

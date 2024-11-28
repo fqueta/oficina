@@ -164,11 +164,20 @@
                 </div>
                 <div class="form-row etp-2">
                     <label for="servicos">Tipo de manutenção</label>
-                    <select required name="servicos">
+                    <select required name="config[servicos]">
                         <!-- Lista de serviços que virá do sistema -->
                         <option value="">...</option>
-                        <option value="">...</option>
+                        <option value="Manutenção de 50h">Manutenção de 50h</option>
+                        <option value="Manutenção de 100h">Manutenção de 100h</option>
+                        <option value="Manutenção de 200h">Manutenção de 200h</option>
+                        <option value="Manutenção de 500h">Manutenção de 500h</option>
+                        <option value="Manutenção de 1000h">Manutenção de 1000h</option>
+                        <option value="CVA">CVA</option>
+                        <option value="Inspeção de aeronavegabioptiondade">Inspeção de aeronavegabioptiondade</option>
+                        <option value="Inspeção pré-compra">Inspeção pré-compra</option>
+                        <option value="Pane">Pane</option>
                         <option value="Outros">Outros</option>
+
                     </select>
                 </div>
 
@@ -180,7 +189,7 @@
                 </div>
                 <div class="form-row etp-2">
                     <label for="contrato">
-                        <input type="checkbox" required name="meta[termo]" value="s" id="contrato"> Aceito o <a href="{{ url('/'.App\Qlib\Qlib::get_slug_post_by_id(10))}}">termo de uso</a>
+                        <input type="checkbox" required name="meta[termo]" value="s" id="contrato"> Aceito o <a href="{{ url('/'.App\Qlib\Qlib::get_slug_post_by_id(10))}}" target="_BLANK">termo de uso</a>
                     </label>
                 </div>
                 <div class="form-row mens">
@@ -220,7 +229,7 @@
             e.preventDefault();
             let btn_press = $(this).attr('btn');
             submitFormulario($('#form-agendamento'),function(res){
-                lib_formatMensagem('.mens',res.mens,res.color);
+                lib_formatMensagem_front('.mens',res.mens,res.color);
                 if(res.exec){
                     if(res.data && res.consulta){
                         render_tabela_rab(res.data,res.consulta);
@@ -275,7 +284,7 @@
         let btn_press = $(this).attr('btn');
         submitFormulario($('#form-agendamento'),function(res){
             if(res.mens){
-                lib_formatMensagem('.mens',res.mens,res.color);
+                lib_formatMensagem_front('.mens',res.mens,res.color);
             }
             // if(d=res.data){
             //     render_tabela_rab(d);

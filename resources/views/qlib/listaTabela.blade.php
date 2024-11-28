@@ -64,7 +64,7 @@
                     $val->id = $val->ID;
                 }
                 $rlink = 'edit';
-                if($routa=='leiloes_adm'||$routa=='users'||$routa=='beneficiarios'||$routa=='lotes'||$routa=='quadras'||$routa=='bairros'){
+                if($routa=='orcamentos'||$routa=='users'||$routa=='beneficiarios'||$routa=='lotes'||$routa=='quadras'||$routa=='bairros'){
                     $rlink = 'show';
                 }
                 if($routa=='leiloes'){
@@ -95,7 +95,7 @@
                             </a>
                         @else
                             @can('update',$routa)
-                                @if ($routa=='leiloes_adm' || $routa=='users'||$routa=='beneficiarios'||$routa=='lotes'||$routa=='quadras'||$routa=='bairros')
+                                @if ($routa=='orcamentos' || $routa=='users'||$routa=='beneficiarios'||$routa=='lotes'||$routa=='quadras'||$routa=='bairros')
                                     <a href="{{ $linkShow }}" title="visualizar" class="btn btn-sm btn-outline-secondary mr-2">
                                         <i class="fas fa-eye"></i>
                                     </a>
@@ -110,7 +110,7 @@
                                     </svg>
                                 </a>
                                 @else
-                                @if ($routa=='leiloes' || $routa=='leiloes_adm')
+                                @if ($routa=='leiloes' || $routa=='orcamentos')
                                     <a href=" {{ route($routa.'.show',['id'=>$val->id]) }} " title="visualizar" class="btn btn-sm btn-outline-secondary mr-2">
                                         <i class="fas fa-eye"></i>
                                     </a>

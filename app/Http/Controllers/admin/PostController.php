@@ -153,7 +153,7 @@ class PostController extends Controller
         $post_totais->esteMes = $fm->whereYear('post_date', '=', $ano)->whereMonth('post_date','=',$mes)->count();
         $post_totais->ativos = $fm->where('post_status','=','publish')->count();
         $post_totais->inativos = $fm->where('post_status','!=','publish')->count();
-        // dd($post);
+        // dump($post);
 
         $ret['post'] = $post;
         $ret['post_totais'] = $post_totais;
@@ -746,6 +746,81 @@ class PostController extends Controller
         ];
         return $ret;
     }
+    public function campos_orcamentos($post_id=false){
+        $hidden_editor = '';
+        $data = false;
+        $user = Auth::user();
+        if($post_id){
+            $data = Post::Find($post_id);
+        }
+        if(Qlib::qoption('editor_padrao')=='laraberg'){
+            $hidden_editor = 'hidden';
+        }
+        $ret = [
+            'ID'=>['label'=>'Id','active'=>true,'type'=>'hidden','exibe_busca'=>'d-block','event'=>'','tam'=>'2'],
+            'post_type'=>['label'=>'tipo de post','active'=>false,'type'=>'hidden','exibe_busca'=>'d-none','event'=>'','tam'=>'2','value'=>$this->post_type],
+            'token'=>['label'=>'token','active'=>false,'type'=>'hidden','exibe_busca'=>'d-block','event'=>'','tam'=>'2'],
+            'post_date'=>['label'=>'Data','active'=>true,'type'=>'hidden_text','exibe_busca'=>'d-block','event'=>'','tam'=>'6'],
+            // 'url_view'=>[
+            //     'label'=>__('Link no site'),
+            //     'type'=>'html',
+            //     'active'=>false,
+            //     'script'=>'admin.posts.link_view',
+            //     'script_show'=>'admin.posts.link_view',
+            //     'dados'=>$data,
+            // ],
+            // 'config[tipo_pagina]'=>[
+            //     'label'=>'Tipo de página*',
+            //     'active'=>true,
+            //     'type'=>'select',
+            //     'arr_opc'=>Qlib::get_tipos('tipos_paginas'),'exibe_busca'=>'d-block',
+            //     'event'=>'required',
+            //     'tam'=>'4',
+            //     'exibe_busca'=>true,
+            //     'option_select'=>true,
+            //     'class'=>'',
+            //     'value'=>@$_GET['config']['tipo_pagina'],
+            //     'cp_busca'=>'config][tipo_pagina',
+            // ],
+            // 'post_name'=>['label'=>'Slug','active'=>false,'placeholder'=>'Ex.: nome-do-post','type'=>'text','exibe_busca'=>'d-block','event'=>'type_slug=true','tam'=>'8'],
+            'post_title'=>['label'=>'Titulo','active'=>true,'placeholder'=>'Ex.: Nome da página ','type'=>'text','exibe_busca'=>'d-block','event'=>'onkeyup=lib_typeSlug(this)','tam'=>'12'],
+            // 'post_excerpt'=>['label'=>'Descriação curta','active'=>false,'type'=>'textarea','exibe_busca'=>'d-block','event'=>$hidden_editor,'tam'=>'12','class_div'=>'','class'=>'','placeholder'=>__('Escreva seu conteúdo aqui..')],
+            // 'post_content'=>['label'=>'Conteudo','active'=>false,'type'=>'textarea','exibe_busca'=>'d-block','event'=>$hidden_editor,'tam'=>'12','class_div'=>'','class'=>'editor-padrao summernote','placeholder'=>__('Escreva seu conteúdo aqui..')],
+            // 'config[permission][]'=>[
+            //     'label'=>'Permissão de visualização (Visível para todos se não selecionar)',
+            //     'active'=>true,
+            //     'type'=>'select_multiple',
+            //     'arr_opc'=>Qlib::sql_array("SELECT id,name FROM permissions WHERE active='s' AND id >='".$user->id_permission."'",'name','id'),'exibe_busca'=>'d-block',
+            //     'event'=>'',
+            //     'tam'=>'12',
+            //     'cp_busca'=>'config][permission'
+            // ],
+            'post_status'=>['label'=>'Status','active'=>true,'type'=>'chave_checkbox','value'=>'publish','valor_padrao'=>'publish','exibe_busca'=>'d-block','event'=>'','tam'=>'3','arr_opc'=>['aguardando'=>'Aguardando','resolvido'=>'Resolvido']],
+        ];
+        $config_orc=[];
+        if(isset($data['token'])){
+            $oc = (new OrcamentoController)->orcamento_html($data['token']);
+            $data['orcamento_html'] = $oc;
+        }
+        if(isset($data['config']) && is_string($data['config'])){
+            $data['config_orc'] = json_decode($data['config'], true);
+            // if(isset($))
+
+        }
+        if(Qlib::isAdmin(1)){
+            $ret['token']['type'] = 'hidden_text';
+            $ret['token']['tam'] = '6';
+        }
+        $ret['add_orcamentos'] = [
+            'label'=>__('Orçamentos'),
+            'type'=>'html',
+            'active'=>false,
+            'script'=>'admin.orcamentos.add_orcamentos',
+            'script_show'=>'admin.orcamentos.show_orcamentos',
+            'dados'=>$data,
+        ];
+        return $ret;
+    }
     public function campos_menus($sec=false){
         $hidden_editor = '';
         if(Qlib::qoption('editor_padrao')=='laraberg'){
@@ -788,6 +863,8 @@ class PostController extends Controller
 
         }elseif($type=='menus'){
             $ret = $this->campos_menus($post_id);
+        }elseif($type=='orcamentos'){
+            $ret = $this->campos_orcamentos($post_id);
         }elseif($type=='paginas'){
             $ret = $this->campos_paginas($post_id);
         }elseif($type=='pacotes_lance'){
@@ -1049,7 +1126,7 @@ class PostController extends Controller
         }
         $this->authorize('ler', $this->routa);
         if(!empty($dados)){
-            $title = 'Visualização da leilões';
+            $title = 'Visualização de orçamentos';
             if($this->routa=='leiloes_adm'){
                 //list lances
             //    dd($dados);

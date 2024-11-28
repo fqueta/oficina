@@ -43,9 +43,9 @@ class QoptionSeeder extends Seeder
                 'obs'=>'',
             ],
             [
-                'nome'=>'Emails dos gerentes',
-                'url'=>'email_gerente',
-                'valor'=>'ger.maisaqui3@gmail.com',
+                'nome'=>'Celular do whatsapp do Admin',
+                'url'=>'celular_zap',
+                'valor'=>'5532991648202',
                 'obs'=>'',
             ],
             [

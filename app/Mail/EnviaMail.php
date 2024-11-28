@@ -28,11 +28,20 @@ class EnviaMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: $this->details['subject'],
-            to: $this->details['email'],
-            metadata : $this->details,
-        );
+        if(isset($this->details['from'])){
+            return new Envelope(
+                subject: $this->details['subject'],
+                to: $this->details['email'],
+                from: $this->details['from'],
+                metadata : $this->details,
+            );
+        }else{
+            return new Envelope(
+                subject: $this->details['subject'],
+                to: $this->details['email'],
+                metadata : $this->details,
+            );
+        }
     }
 
     /**

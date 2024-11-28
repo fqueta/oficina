@@ -71,17 +71,17 @@ class MenuSiteSeeder extends Seeder
             //     'page_id'=>4,
             //     'pai'=>''
             // ],
-            [
-                'categoria'=>'',
-                'description'=>'Contato',
-                'icon'=>'fa fa-contacts',
-                'actived'=>true,
-                'permission'=>'public',
-                'url'=>'/contato',
-                'ordenar'=>5,
-                'page_id'=>0,
-                'pai'=>''
-            ],
+            // [
+            //     'categoria'=>'',
+            //     'description'=>'Contato',
+            //     'icon'=>'fa fa-contacts',
+            //     'actived'=>true,
+            //     'permission'=>'public',
+            //     'url'=>'/contato',
+            //     'ordenar'=>5,
+            //     'page_id'=>0,
+            //     'pai'=>''
+            // ],
         ]);
     }
 }

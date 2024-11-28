@@ -104,31 +104,44 @@ class TesteController extends Controller
         // $ret['notify'] = (new LeilaoController())->notifica_termino($leilao_id,'ganhador');
         // $ret = (new UserController)->ger_select_ddi();
 
-        $token = '6740cde30f704';
-        $subject = 'SOLICITAÇÃO DE AGENDAMENTO DE MANUTENÇÃO';
-        $dc = User::find(1);
-        $mensagem =  'Antenção foi solicitado um orçamento por <b>'.$dc['name'].'</b> em '.Qlib::dataLocal();
-        $mensagem .= (new OrcamentoController)->orcamento_html($token,'markdown');
-        $cc = 'ger.maisaqui1@gmail.com';
-        $details = [
-            'email' => $dc['email'],
-            'cc' => $cc,
-            'name' => $dc['name'],
-            'subject' => $subject,
-            'message' => $mensagem
-        ];
-        if($request->get('envia')==1){
-            if(isset($details['cc'])){
-                $ret = Mail::to($details['email'])->cc($details['cc'])->send(new EnviaMail($details));
-            }else{
-                $ret = Mail::to($details['email'])->send(new EnviaMail($details));
-            }
-        }elseif($request->get('envia')==2){
-            $ret = SendEmailJob::dispatch($details);
-            dd(config('app.name'));
+        $token = $request->get('token') ? $request->get('token') : '6747455546463';
+        $opc = $request->get('opc') ? $request->get('opc') : 1;
+        if($opc==2){
+            $link = (new OrcamentoController)->orcamento_html($token,'whatsapp');
+            $tm =$link.'<br>';
+            // $ret = $link;
+            $ret = $tm.'<a href="'.$link.'" target="_blank">Acessar</a>';
         }else{
-            // $ret = (new OrcamentoController)->orcamento_html($token);
-            $ret = new EnviaMail($details);
+
+            $subject = 'SOLICITAÇÃO DE AGENDAMENTO DE MANUTENÇÃO';
+            $dc = User::find(1);
+            $mensagem =  'Antenção foi solicitado um orçamento por <b>'.$dc['name'].'</b> em '.Qlib::dataLocal();
+            $mensagem .= (new OrcamentoController)->orcamento_html($token,'markdown');
+            $nome = 'Fernando Queta';
+            $cc = 'suporte@maisaqui.com.br';
+            $from = 'suporte@aeroclubejf.com.br';
+            $email = 'contato@aeroclubejf.com.br';
+            $details = [
+                'email' => $email,
+                'cc' => $cc,
+                // 'from' => $from,
+                'name' => $nome,
+                'subject' => $subject,
+                'message' => $mensagem
+            ];
+            if($request->get('envia')==1){
+                if(isset($details['cc'])){
+                    $ret = Mail::to($details['email'])->cc($details['cc'])->send(new EnviaMail($details));
+                }else{
+                    $ret = Mail::to($details['email'])->send(new EnviaMail($details));
+                }
+            }elseif($request->get('envia')==2){
+                $ret = SendEmailJob::dispatch($details);
+                dd(config('app.name'));
+            }else{
+                $ret = (new OrcamentoController)->orcamento_html($token);
+                // $ret = new EnviaMail($details);
+            }
         }
         return $ret;
         // dd($ret);

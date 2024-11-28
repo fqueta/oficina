@@ -21,7 +21,7 @@ class OrcamentoController extends Controller
         $matricula = strtoupper($matricula);
         $ret['exec'] = false;
         $ret['color'] = 'danger';
-        $ret['mens'] = 'Aeronave não cadastrada na Anac';
+        $ret['mens'] = 'Aeronave não encontrada na Anac';
         $passa_consulta = isset($config['consulta']) ? $config['consulta'] : '';
         if($matricula && $api == 'true' && (!$passa_consulta || empty($passa_consulta)) ){
             $url = 'https://api.aeroclubejf.com.br/api/v1/rab?matricula='.$matricula;
@@ -34,7 +34,7 @@ class OrcamentoController extends Controller
                     $ret['consulta'] = Qlib::codificarBase64($json);
                 }else{
                     $ret['color'] = 'danger';
-                    $ret['mens'] = 'Aeronave não cadastrada na Anac';
+                    $ret['mens'] = 'Aeronave não encontrada na Anac tente mais tarde';
                 }
             }
             $ret['salv'] = $this->salverContato($request);
@@ -88,7 +88,7 @@ class OrcamentoController extends Controller
         }
         $ret['id_cliente'] = $id_cliente;
         if($id_cliente && isset($config['consulta'])) {
-            $ret = $this->salvarOrcamento($id_cliente,$d,$config['consulta']);
+            $ret = $this->salvarOrcamento($id_cliente,$d,$config);
         }
         $ret['d'] = $d;
         return $ret;
@@ -103,9 +103,10 @@ class OrcamentoController extends Controller
         $ret['exec'] = false;
         $ret['mens'] = __('Erro ao enviar orçamento!');
         $ret['color'] = 'danger';
-        $arr_config = Qlib::decodeArray($config);
+        $arr_config    = $config;
+        $arr_config['consulta'] = Qlib::decodeArray($config['consulta']);
         $ret['arr_config'] = $arr_config;
-        $post_type = 'orcamento';
+        $post_type = 'orcamentos';
         $dc = User::find($id_cliente);
         $post_title = 'Solicitação de orçamento '.@$dc['name'];
         $post_status = 'aguardando'; //Status de orçamentos enviado,aguardando
@@ -115,7 +116,7 @@ class OrcamentoController extends Controller
             'config'=>Qlib::lib_array_json($arr_config),
             'post_type'=>$post_type,
             'post_title'=>$post_title,
-            'post_author'=> Auth::id(),
+            'post_author'=> (Auth::id() ? Auth::id() : $id_cliente),
             'post_status'=> $post_status,
             'token'=> $token,
             'post_content'=> @$d['obs'],
@@ -139,17 +140,21 @@ class OrcamentoController extends Controller
                 $post_id = Qlib::get_id_by_token($token);
                 $ret['termo'] = $this->salvar_aceito_termo(['id_cliente'=>$id_cliente,'post_id'=>$post_id,'meta'=>@$d['meta']]);
                 if(is_array($email_admin)){
-                    foreach ($email_admin as $email) {
-                        if(!empty($email)){
+                    $from = 'suporte@aeroclubejf.com.br';
+                    // dd($email_admin);
+                    // foreach ($email_admin as $email) {
+                        if(isset($email_admin[0])){
                             $details = [
-                                'email' => $email,
+                                'email' => $email_admin[0],
+                                'from' => $from,
                                 'name' => '',
                                 'subject' => $subject,
-                                'message' => $mensagem
+                                'message' => $mensagem,
+                                'cc' => $email_admin[1]
                             ];
                             SendEmailJob::dispatch($details);
                         }
-                    }
+                    // }
                 }
                 $mensagem = '<p>Olá <b>'.$dc['name'].'</b> obrigado pelo seu contato!</p><p>Sua solicitação foi encaminhada para a nossa oficina em breve entraremos em contato.</p>';
                 $mensagem .= $this->orcamento_html($token);
@@ -163,9 +168,10 @@ class OrcamentoController extends Controller
                 SendEmailJob::dispatch($details_cliente);
                 //criar um link de redirecioanmento
                 $link_redirect = '/'.Qlib::get_slug_post_by_id(5);
+                $link_zap = $this->orcamento_html($token,'whatsapp');
                 $ret['mens'] = __('Orçamento enviado com sucesso!');
                 $ret['color'] = 'success';
-
+                $ret['link_zap'] = $link_zap;
                 $ret['redirect'] = $link_redirect;
             } catch (\Throwable $th) {
                 $ret['erro'] = $th;
@@ -224,21 +230,45 @@ class OrcamentoController extends Controller
     public function orcamento_html($token,$type=false){
         $d = Post::where('token','=', $token)->get();
         $ret = '';
-        $type = 'markdown';
+        $tm1 = '';
+        $type = $type ? $type : 'markdown';
         if($d->isNotEmpty()){
             $tbody = '';
-            if($type=='markdown'){
-                $tm1 = '
+            if($type == 'whatsapp'){
+                $link_zap = 'https://api.whatsapp.com/send?phone={celular_zap}&text={text}';
+                $tbody = '<br>';
+            }
+            $dc = User::find($d[0]['guid']);
+            $email = isset($dc['email']) ? $dc['email'] : '';
+            $name = '';
+            if(isset($dc['name']) && $type == 'whatsapp'){
+                $tm1 .= 'Meu nome é *'.@$dc['name'].'* gostaria de um orçamento de serviço para a Aeronave abaixo: %0A--------%0A';
+            }else{
+                $name = isset($dc['name']) ? $dc['name'] : '';
+                $tm1 .= '<p class=\'mb-0\'><b>Nome</b>: {name}</p>';
+            }
+            if($type == 'whatsapp'){
+                $tm1 .= '<p><b>Telefone</b>: {telefone}</p>';
+                $tm1 .= '<p><b>Email</b>: {email}</p>';
+            }else{
+                $tm1 .= '<p class=\'mb-0\'><b>Telefone</b>: {telefone}</p>';
+                $tm1 .= '<p class=\'mb-0\'><b>Email</b>: {email}</p>';
+            }
+
+            if($type=='markdown' || $type == 'whatsapp'){
+                $tm1 .= '
                    <p>{tbody}</p>
-                   <p><b>Descrição</b>:<br>{obs}</p>
+                   <br><p><b>'.__('Serviço').'</b>: {servicos}</p>
+                   <br><p><b>'.__('Descrição').'</b>:<br>{obs}</p>
                 ';
                 $tm2 = ' - <b>{label}:</b> {value}<br>';
             }else{
-                $tm1 = '
+                $tm1 .= '
                 <table class="table">
                     {tbody}
                 </table>
-                <p><b>Descrição</b>:<br>{obs}</p>
+                <p><b>'.__('Serviço').'</b>: {servicos}</p>
+                <p><b>'.__('Descrição').'</b>:<br>{obs}</p>
                 ';
                 $tm2 = '
                 <tr>
@@ -249,8 +279,20 @@ class OrcamentoController extends Controller
             }
             $darr = $d->toArray();
             $dar = $darr[0];
-            if(isset($dar['config']['data']) && is_array($dar['config']['data'])){
-                $arr = $dar['config']['data'];
+            if(is_string($dar['config'])){
+                $dar['config'] = Qlib::lib_json_array($dar['config']);
+            }
+            $config = $dar['config'];
+            // dump($config);
+            $telefone = isset($config['ddi']) ? $config['ddi'] : '';
+            // if($telefone && $type=='whatsapp'){
+
+            // }
+            $telefone .= ' '.isset($config['whatsapp']) ? $config['whatsapp'] : '';
+            $servicos = isset($dar['config']['servicos']) ? $dar['config']['servicos'] : false;
+            $arr = isset($dar['config']['consulta']['data']) ? $dar['config']['consulta']['data'] : [];
+
+            if(isset($arr) && is_array($arr)){
                 foreach ($arr as $k => $v) {
                     $tbody .= str_replace('{label}',$k,$tm2);
                     $tbody = str_replace('{value}',$v,$tbody);
@@ -258,6 +300,29 @@ class OrcamentoController extends Controller
             }
             $ret = str_replace('{tbody}',$tbody,$tm1);
             $ret = str_replace('{obs}',@$dar['post_content'],$ret);
+            $ret = str_replace('{servicos}',@$servicos,$ret);
+            $ret = str_replace('{telefone}',@$telefone,$ret);
+            $ret = str_replace('{email}',@$email,$ret);
+            $ret = str_replace('{name}',@$name,$ret);
+            if($type == 'whatsapp'){
+                $text = $ret;
+                $celular_zap = Qlib::qoption('celular_zap');
+                $celular_zap = str_replace(' ','',trim($celular_zap));
+                $celular_zap = str_replace('(','',$celular_zap);
+                $celular_zap = str_replace(')','',$celular_zap);
+                $celular_zap = str_replace('-','',$celular_zap);
+                $link_zap = 'https://api.whatsapp.com/send?phone={celular_zap}&text={text}';
+                $link_zap = str_replace('{celular_zap}',$celular_zap,$link_zap);
+                $link_zap = str_replace('{text}',trim($text),$link_zap);
+                $celular_zap = str_replace('-','',$celular_zap);
+                $ret = str_replace('<b>','*',$link_zap);
+                $ret = str_replace('</b>','*',$ret);
+                $ret = str_replace('<br>','%0A',$ret);
+                $ret = str_replace('</p>','%0A',$ret);
+                $ret = str_replace('<p>','',$ret);
+                $ret = str_replace(' ','%20',$ret);
+                // $ret = $link_zap;
+            }
         }
         return $ret;
     }
