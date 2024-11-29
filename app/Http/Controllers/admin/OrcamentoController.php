@@ -94,7 +94,9 @@ class OrcamentoController extends Controller
         if($id_cliente && isset($config['consulta'])) {
             $ret = $this->salvarOrcamento($id_cliente,$d,$config);
         }
-        $ret['d'] = $d;
+        if(Qlib::isAdmin(1)){
+            $ret['d'] = $d;
+        }
         return $ret;
     }
     /**
