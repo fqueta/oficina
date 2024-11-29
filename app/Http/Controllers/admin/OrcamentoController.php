@@ -22,6 +22,7 @@ class OrcamentoController extends Controller
         $ret['exec'] = false;
         $ret['color'] = 'danger';
         $ret['mens'] = 'Aeronave não encontrada na Anac';
+        // $dg = $request->all();
         $passa_consulta = isset($config['consulta']) ? $config['consulta'] : '';
         if($matricula && $api == 'true' && (!$passa_consulta || empty($passa_consulta)) ){
             $url = 'https://api.aeroclubejf.com.br/api/v1/rab?matricula='.$matricula;

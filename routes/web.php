@@ -205,7 +205,7 @@ Route::prefix('ajax')->group(function(){
     Route::post('/tornar-vencedor',[LanceController::class,'tornar_vencedor'])->name('leiloes.tornar_vencedor');
     Route::post('/enviar-contato',[ContatoController::class,'enviar_contato'])->name('enviar.contato');
     Route::post('/pre-cadastro-escola',[UserController::class,'pre_cadastro_escola'])->name('user.pre_cadastro_escola');
-    Route::post('/get-rab',[OrcamentoController ::class,'get_rab'])->name('orcamento.rab');
+    Route::post('/get-rab',[OrcamentoController ::class,'get_rab'])->name('ajax.orcamento.rab');
     Route::post('/enviar-agendamento',[OrcamentoController ::class,'enviar_orcamento'])->name('orcamento.enviar');
 });
 Route::prefix('notification')->group(function(){

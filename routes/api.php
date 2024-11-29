@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\OrcamentoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\WebhookController;
@@ -20,3 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 // Route::resource('Webhook/{slug}', WebhookController::class);
 Route::post('/webhook/{slug}',[WebhookController::class,'index']);
+Route::post('/get-rab',[OrcamentoController ::class,'get_rab'])->name('orcamento.rab');
