@@ -64,13 +64,15 @@ class OrcamentoController extends Controller
         // $config['_token'] = $config['
         $name = strip_tags($request->get('name'));
         $id_cliente = false;
+        $id_cliente_front = Qlib::qoption('id_permission_front'); //id da permissão do cliente
         try {
-
-            $salv = User::create([
+            $arr_sav = [
                 'email'=>$email,
                 'config'=>$config,
                 'name'=>$name,
-            ]);
+                'id_permission'=>$id_cliente_front,
+            ];
+            $salv = User::create($arr_sav);
             $id_cliente = isset($salv['id']) ? $salv['id'] : false;
             $ret['salv'] = $salv;
         } catch (\Throwable $th) {
@@ -83,6 +85,7 @@ class OrcamentoController extends Controller
                     $ret['up'] = User::where('id', $id_cliente)->update([
                         'name' => $name,
                         'config' => $config,
+                        // 'id_permission'=>$id_cliente_front,
                     ]);
                 }
             }

@@ -39,7 +39,7 @@ class QoptionSeeder extends Seeder
             [
                 'nome'=>'Permissão padrão FrontEnd',
                 'url'=>'id_permission_front',
-                'valor'=>'8',
+                'valor'=>'5',
                 'obs'=>'',
             ],
             [
