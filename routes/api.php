@@ -22,3 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route::resource('Webhook/{slug}', WebhookController::class);
 Route::post('/webhook/{slug}',[WebhookController::class,'index']);
 Route::post('/get-rab',[OrcamentoController ::class,'get_rab'])->name('orcamento.rab');
+Route::get('/orcamento-zap',[OrcamentoController ::class,'orcamento_zap'])->name('orcamento.zap');

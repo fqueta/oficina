@@ -201,26 +201,7 @@
     </div>
 </div>
 <script>
-    // function get_matricula(obj){
-    //     var matricula = obj.value;
-    //     if(typeof matricula == 'undefined'){
-    //         matricula = '';
-    //     }
-    //     if(matricula){
-    //         getAjax({
-    //             url:'/bairros/'+val+'/edit?ajax=s',
-    //         },function(res){
-    //             $('#preload').fadeOut("fast");
-    //             if(m=res.value.matricula){
-    //                 $('[name="matricula"]').val(m);
-    //                 $('#txt-matricula').html(m);
-    //             }else{
-    //                 $('[name="matricula"]').val('');
-    //                 $('#txt-matricula').html('');
-    //             }
-    //         });
-    //     }
-    // }
+
     function atualizarConsulta(){
         $('[name="config[consulta]"]').val('');
     }

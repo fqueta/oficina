@@ -99,6 +99,16 @@ class OrcamentoController extends Controller
         }
         return $ret;
     }
+    /***
+     * Metodo para revelar um orcamento whatsapp pela api
+     */
+    public function orcamento_zap(request $request){
+        $ret['link'] = '';
+        if($token=$request->get('token')){
+            $ret['link'] = $this->orcamento_html($token,'whatsapp');
+        }
+        return response()->json($ret);
+    }
     /**
      * Metodo para salver uma solicitação de oraçamento do formulario do fornt End
      * @param string $config base64
@@ -133,6 +143,8 @@ class OrcamentoController extends Controller
             $salv = Post::create($arr_salv);
         }
         if($salv){
+            $link_redirect = '/'.Qlib::get_slug_post_by_id(5);
+            $link_zap = $this->orcamento_html($token,'whatsapp');
             try {
                 //code...
                 $email_admin = explode(',',Qlib::qoption('email_gerente'));
@@ -173,13 +185,13 @@ class OrcamentoController extends Controller
                 //enviar 1 email copia para o cliente
                 SendEmailJob::dispatch($details_cliente);
                 //criar um link de redirecioanmento
-                $link_redirect = '/'.Qlib::get_slug_post_by_id(5);
-                $link_zap = $this->orcamento_html($token,'whatsapp');
                 $ret['mens'] = __('Orçamento enviado com sucesso!');
                 $ret['color'] = 'success';
                 $ret['link_zap'] = $link_zap;
                 $ret['redirect'] = $link_redirect;
             } catch (\Throwable $th) {
+                $ret['link_zap'] = $link_zap;
+                $ret['redirect'] = $link_redirect;
                 $ret['erro'] = $th;
                 $ret['mens'] = __('Tivemos um erro inesperdado entre em contato com o suporte!');
                 $ret['color'] = 'danger';
