@@ -105,7 +105,11 @@ class OrcamentoController extends Controller
     public function orcamento_zap(request $request){
         $ret['link'] = '';
         if($token=$request->get('token')){
-            $ret['link'] = $this->orcamento_html($token,'whatsapp');
+            if($request->has('base64')){
+                $ret['link'] = base64_encode($this->orcamento_html($token,'whatsapp'));
+            }else{
+                $ret['link'] = $this->orcamento_html($token,'whatsapp');
+            }
         }
         return response()->json($ret);
     }
@@ -336,9 +340,11 @@ class OrcamentoController extends Controller
                 $ret = str_replace('<b>','*',$link_zap);
                 $ret = str_replace('</b>','*',$ret);
                 $ret = str_replace('<br>','%0A',$ret);
+                $ret = str_replace('\n','%0A',$ret);
                 $ret = str_replace('</p>','%0A',$ret);
                 $ret = str_replace('<p>','',$ret);
                 $ret = str_replace(' ','%20',$ret);
+                // dd($link_zap);
                 // $ret = $link_zap;
             }
         }
