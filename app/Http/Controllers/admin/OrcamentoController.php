@@ -147,8 +147,11 @@ class OrcamentoController extends Controller
             $salv = Post::create($arr_salv);
         }
         if($salv){
-            $link_redirect = '/'.Qlib::get_slug_post_by_id(5);
             $link_zap = $this->orcamento_html($token,'whatsapp');
+            $link_redirect = '/'.Qlib::get_slug_post_by_id(5);
+            if($link_zap){
+                $link_redirect .= '?zlink='.base64_encode($link_zap);
+            }
             try {
                 //code...
                 $email_admin = explode(',',Qlib::qoption('email_gerente'));
