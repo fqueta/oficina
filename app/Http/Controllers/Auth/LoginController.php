@@ -47,6 +47,11 @@ class LoginController extends Controller
 
         return $ret;
     }
+    protected function authenticated(Request $request, $user)
+    {
+        // Redireciona para a página anterior ou para uma rota padrão se a anterior não estiver disponível
+        return redirect()->intended(session()->previousUrl() ?? '/home');
+    }
     /**
      * Create a new controller instance.
      *
@@ -81,10 +86,12 @@ class LoginController extends Controller
                 }
                 if (isset($dUser['id_permission']) && $dUser['id_permission'] < $id_cliente) {
                     //login do administrado
-                    return redirect()->route('home');
+                    // return redirect()->route('home');
+                    return redirect()->intended(session()->previousUrl() ?? '/home');
                 } else {
                     //login do cliente
-                    return redirect()->route('index');
+                    return redirect()->intended(session()->previousUrl() ?? '/index');
+                    // return redirect()->route('index');
                 }
             } else {
                 $this->incrementLoginAttempts($request);
