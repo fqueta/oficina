@@ -14,7 +14,7 @@ $config = [
     |
     */
 
-    'title' => 'Leloair',
+    'title' => 'Oficina ACJF',
     'title_prefix' => '',
     'title_postfix' => '',
 
