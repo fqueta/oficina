@@ -272,6 +272,7 @@ class OrcamentoController extends Controller
                 $name = isset($dc['name']) ? $dc['name'] : '';
                 $tm1 .= '<p class=\'mb-0\'><b>Nome</b>: {name}</p>';
             }
+            $tm1 .= '<p><b>ID orçamento</b>: {id}</p>';
             if($type == 'whatsapp'){
                 $tm1 .= '<p><b>Telefone</b>: {telefone}</p>';
                 $tm1 .= '<p><b>Email</b>: {email}</p>';
@@ -325,6 +326,7 @@ class OrcamentoController extends Controller
             }
             $ret = str_replace('{tbody}',$tbody,$tm1);
             $ret = str_replace('{obs}',@$dar['post_content'],$ret);
+            $ret = str_replace('{id}',@$dar['ID'],$ret);
             $ret = str_replace('{servicos}',@$servicos,$ret);
             $ret = str_replace('{telefone}',@$telefone,$ret);
             $ret = str_replace('{email}',@$email,$ret);
