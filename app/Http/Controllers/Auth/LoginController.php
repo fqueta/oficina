@@ -50,7 +50,9 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
         // Redireciona para a página anterior ou para uma rota padrão se a anterior não estiver disponível
-        return redirect()->intended(session()->previousUrl() ?? '/home');
+        $url = session()->previousUrl();
+        dd($url);
+        return redirect()->intended($url ?? '/home');
     }
     /**
      * Create a new controller instance.
@@ -78,20 +80,22 @@ class LoginController extends Controller
             }
             $logar = (new UserController)->login([$key => $request->email, 'password' => $request->password, 'ativo' => 's', 'excluido' => 'n']);
             if ($logar) {
+                $request->session()->regenerate();
                 $dUser =  Auth::user();
                 $id_cliente = 5;
                 if($request->has('r')){
                     //nesse caso redirect ulr
                     return redirect($request->get('r'));
                 }
+                $url = session()->previousUrl();
                 if (isset($dUser['id_permission']) && $dUser['id_permission'] < $id_cliente) {
                     //login do administrado
-                    // return redirect()->route('home');
                     return redirect()->intended(session()->previousUrl() ?? '/home');
+                    // return $this->authenticated($request,Auth::user());
                 } else {
                     //login do cliente
                     return redirect()->intended(session()->previousUrl() ?? '/index');
-                    // return redirect()->route('index');
+                    // return $this->authenticated($request,Auth::user());
                 }
             } else {
                 $this->incrementLoginAttempts($request);

@@ -175,7 +175,8 @@ class OrcamentoController extends Controller
                                 'name' => '',
                                 'subject' => $subject,
                                 'message' => $mensagem,
-                                'cc' => $email_admin[1]
+                                'cc' => $email_admin[1],
+                                'bcc' => @$email_admin[2],
                             ];
                             SendEmailJob::dispatch($details);
                         }

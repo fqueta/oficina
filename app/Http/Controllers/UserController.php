@@ -839,8 +839,7 @@ class UserController extends Controller
     public function login($dados){
         $email = isset($dados['email']) ? $dados['email'] : false;
         $password = isset($dados['password']) ? $dados['password'] : false;
-
-        if (Auth::attempt(['email' => $email, 'password' => $password, 'ativo' => 's', 'excluido' => 'n'])) {
+        if (Auth::attempt(['email' => $email, 'password' => $password, 'ativo' => 's', 'excluido' => 'n'],@$dados['remember'])) {
             return true;
         }else{
             return false;
