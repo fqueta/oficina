@@ -32,7 +32,11 @@
                 @include('beneficiarios.list_cad_social')
             @endif --}}
         @endif
+        @if ($routa=='orcamentos')
+        @include('admin.orcamentos.show_contratos')
+        @else
         @include('qlib.show_files')
+        @endif
     </div>
     <div class="{{$config['class_card2']}} mt-0 mb-5 d-print-none">
         @if ($routa=='leiloes_adm')

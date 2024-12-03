@@ -13,10 +13,10 @@ return [
     |
     */
     'dominio' => 'https://oficina.aeroclubejf.com.br/',
-    'version' => '1.0.1',
+    'version' => '1.2.1',
     'name' => env('APP_NAME', 'Oficina ACJF'),
     'id_app' => env('ID_APP', 'oficina'),
-    'last_update' => '20/11/2024',
+    'last_update' => '03/12/2024',
     /*
     |--------------------------------------------------------------------------
     | Application Environment

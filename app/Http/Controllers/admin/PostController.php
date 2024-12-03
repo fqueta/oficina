@@ -1152,7 +1152,12 @@ class PostController extends Controller
                 'class_card1'=>'col-md-8',
                 'class_card2'=>'col-md-4',
             ];
-
+            if($this->routa == 'orcamentos'){
+                $orc = new OrcamentoController;
+                $assinatura = Qlib::get_postmeta($id,$orc->campo_assinatura,true);
+                // $config['ttassinado'] = Qlib::get_postmeta($id,$orc->campo_ttassinado);
+                $config['assinatura'] = Qlib::lib_json_array($assinatura);
+            }
             // if(!isset$dados['matricula'])
             //     $config['display_matricula'] = 'd-none';
             if(isset($dados['config']) && is_array($dados['config'])){

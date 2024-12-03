@@ -120,6 +120,11 @@ Route::prefix('admin')->group(function(){
     Route::resource('orcamentos','\App\Http\Controllers\admin\PostController',['parameters' => [
         'orcamentos' => 'id'
     ]]);
+    Route::prefix('orcamentos')->group(function(){
+        Route::get('/ta/{id}',[OrcamentoController::class,'termo_aceito'])->name('termo.aceito');
+        // Route::get('/ajax',[App\Http\Controllers\TesteController::class,'ajax'])->name('teste.ajax');
+    });
+
     Route::resource('media','\App\Http\Controllers\admin\mediaController',['parameters' => [
         'media' => 'id'
     ]]);

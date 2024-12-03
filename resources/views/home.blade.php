@@ -55,10 +55,10 @@
         </div>
     @endif
 
-    <div class="row mb-2">
+    {{-- <div class="row mb-2">
         @include('admin.leilao.lista_leilao_terminado')
         @include('admin.blacklist.cardpainel')
-    </div>
+    </div> --}}
 
 
   </div>

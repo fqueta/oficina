@@ -28,13 +28,14 @@ class homeController extends Controller
 
         // $blacklist=(new BlacklistController())->get_blacklist();
         $lc = new LeilaoController;
+        $orc = new OrcamentoController;
         $uc = new UserController;
         $fnp = $lc->finalizados_nao_pagos();
         $card_top = [
-            'finalizados' => ['label' => __('Leilões finalizados'),'icon' => 'fas fa-gavel','link' => url('/admin#list-finalizados'),'value' => $lc->total_finalizados(),'color' => 'bg-info','title'=>''],
-            'andamento' => ['label' => __('Leilões em andamento'),'icon' => 'fas fa-gavel','link' => url('/admin/leiloes_adm?situacao=ea&contrato=s'),'value' => $lc->total_situacao('ea'),'color' => 'bg-success','title'=>''],
+            'finalizados' => ['label' => __('Orcametos aguardando'),'icon' => 'fas fa-gavel','link' => url('/admin#list-finalizados'),'value' => $orc->total_orcamentos('aguardando'),'color' => 'bg-info','title'=>''],
+            'andamento' => ['label' => __('Orcametos em andamento'),'icon' => 'fas fa-gavel','link' => url('/admin/orcamentos?situacao=andamento&contrato=s'),'value' => $orc->total_orcamentos('andamento'),'color' => 'bg-success','title'=>''],
             'cadastrados' => ['label' => __('Usuários cadastrados'),'icon' => 'fas fa-users','link' => route('users.index'),'value' => $uc->total(),'color' => 'bg-warning','title'=>''],
-            'total' => ['label' => __('Leilões não pagos'),'icon' => 'fa fa-cash','event'=>'','link' => url('/admin#list-finalizados'),'value' => Qlib::valor_moeda(@$fnp['total_apagar'],'R$'),'color' => 'bg-danger','title'=>'Contratos de leilões arrematados e não pagos'],
+            'total' => ['label' => __('Orcametos não pagos'),'icon' => 'fa fa-cash','event'=>'','link' => url('/admin#list-finalizados'),'value' => Qlib::valor_moeda(@$fnp['total_apagar'],'R$'),'color' => 'bg-danger','title'=>'Contratos de leilões arrematados e não pagos'],
         ];
         // dd($card_top);
         $config = [

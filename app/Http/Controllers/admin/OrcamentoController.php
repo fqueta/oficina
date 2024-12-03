@@ -14,6 +14,14 @@ use PhpParser\Node\Stmt\TryCatch;
 
 class OrcamentoController extends Controller
 {
+
+    public $campo_assinatura;
+    public $campo_ttassinado;
+    public function __construct()
+    {
+        $this->campo_assinatura = 'assinatura_termo';
+        $this->campo_ttassinado = 'texto_termo_assinado';
+    }
     public function get_rab(Request $request){
         $matricula = $request->get('matricula') ? $request->get('matricula') : null;
         $config = $request->get('config') ? $request->get('config') : null;
@@ -220,7 +228,7 @@ class OrcamentoController extends Controller
         $ret['exec'] = false;
         if(isset($meta['termo']) && $meta['termo']=='s' && $id_cliente && $post_id){
             //nesse caso o contrato foi aceito por um cliente válido
-            $assinatura = Qlib::update_postmeta($post_id,'assinatura_termo',Qlib::lib_array_json([
+            $assinatura = Qlib::update_postmeta($post_id,$this->campo_assinatura,Qlib::lib_array_json([
                 'aceito_termo' => 's',
                 'data' => Qlib::dataLocal(),
                 'ip' => $_SERVER['REMOTE_ADDR'],
@@ -355,5 +363,18 @@ class OrcamentoController extends Controller
             }
         }
         return $ret;
+    }
+    public function termo_aceito($id){
+        $termo = Qlib::get_postmeta($id,$this->campo_ttassinado,true);
+        $titulo = __('Termo assinado!');
+        $arr_texto = Qlib::lib_json_array($termo);
+        // dd($arr_texto);
+        return view('admin.orcamentos.termo_assinado',['termo'=>$arr_texto['texto'],'titulo'=>$titulo]);
+    }
+    public function total_orcamentos($status=''){
+        $total = Post::where('post_type','=','orcamentos')
+        ->where('post_status','=',$status)
+        ->count();
+        return $total;
     }
 }
