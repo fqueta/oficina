@@ -37,6 +37,12 @@ class QoptionSeeder extends Seeder
                 'obs'=>'',
             ],
             [
+                'nome'=>'Id do termo',
+                'url'=>'id_termo',
+                'valor'=>'10',
+                'obs'=>'',
+            ],
+            [
                 'nome'=>'Permissão padrão FrontEnd',
                 'url'=>'id_permission_front',
                 'valor'=>'5',
@@ -141,6 +147,18 @@ class QoptionSeeder extends Seeder
                     'contratos'=>'Contratos',
                     'galeria'=>'Galeria',
                     'tags'=>'Tags',
+                ]),
+                'obs'=>'',
+            ],
+            [
+                'nome'=>'Status de orçamentos',
+                'url'=>'status_orcamentos',
+                'valor'=>Qlib::lib_array_json([
+                    'aguardando'=>'Aguardando atendimento',
+                    'agendamento'=>'Agendamento solicitado',
+                    'orcamento_enviado'=>'Orçamento enviado',
+                    'orcamento_aprovado'=>'Orçamento aprovado',
+                    'orcamento_reprovado'=>'Orçamento reprovado',
                 ]),
                 'obs'=>'',
             ],

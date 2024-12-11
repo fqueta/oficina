@@ -49,13 +49,12 @@
                     }
                 }
                 if(res.errors){
-                    alert('erros');
+                    lib_funError(res);
                     console.log(res.errors);
                 }
             },function(res){
-                if(res.errors){
-                    alert('erros');
-                    console.log(res.errors);
+                if(res){
+                    lib_funError(res);
                 }
             },compleurl);
         });

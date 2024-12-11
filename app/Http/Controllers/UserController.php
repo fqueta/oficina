@@ -19,6 +19,8 @@ use App\Notifications\notificaNewUser;
 use App\Rules\RightCnpj;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Controllers\Auth\LoginController;
+use Illuminate\Support\Facades\DB;
+
 class UserController extends Controller
 {
     protected $user;
@@ -67,12 +69,39 @@ class UserController extends Controller
             'limit'=>isset($get['limit']) ? $get['limit']: 50,
             'order'=>isset($get['order']) ? $get['order']: 'desc',
         ];
+        $campos = $this->campos();
         $logado = Auth::user();
-        $user =  User::where('id_permission','>=',$logado->id_permission)->orderBy('id',$config['order']);
-        //$user =  DB::table('users')->where('ativo','s')->orderBy('id',$config['order']);
+        if(isset($get['term'])){
+            //Autocomplete
+            if(isset($get['id_permission']) && !empty($get['id_permission'])){
+                $sql = "SELECT * FROM users WHERE (name LIKE '%".$get['term']."%') AND id_permission=".$get['id_permission']." AND ".Qlib::compleDelete();
+            }else{
+                // $sql = "SELECT l.*,q.name quadra_valor FROM users as l
+                // JOIN quadras as q ON q.id=l.quadra
+                // WHERE (l.name LIKE '%".$get['term']."%' OR q.name LIKE '%".$get['term']."%' ) AND ".Qlib::compleDelete('l');
+                $compleSql = false;
+                if($this->routa == 'fornecedores'){
+                    $compleSql = "AND id_permission = '".$this->id_permission_fornecedores() ."'";
+                }
+                $sql = "SELECT * FROM users WHERE name LIKE '%".$get['term']."%' $compleSql AND ".Qlib::compleDelete();
 
+            }
+            $user = DB::select($sql);
+            $ret['user'] = $user;
+            $ret['campos'] = $campos;
+            $ret['user_totais'] = @count($user);
+            $ret['titulo_tabela'] = 'Clientes';
+            return $ret;
+        }else{
+            if($this->routa == 'fornecedores'){
+                $user =  User::where('id_permission','=',Qlib::qoption('id_permission_fornecedores'))->orderBy('id',$config['order']);
+            }else{
+                $user =  User::where('id_permission','>=',$logado->id_permission)->orderBy('id',$config['order']);
+            }
+            //$user =  DB::table('users')->where('ativo','s')->orderBy('id',$config['order']);
+        }
         $users = new stdClass;
-        $campos = isset($_SESSION['campos_users_exibe']) ? $_SESSION['campos_users_exibe'] : $this->campos();
+
         $tituloTabela = 'Lista de todos cadastros';
         $arr_titulo = false;
         if(isset($get['filter'])){
@@ -116,7 +145,6 @@ class UserController extends Controller
         $users->esteMes = $fm->whereYear('created_at', '=', $ano)->whereMonth('created_at','=',$mes)->get()->count();
         $users->ativos = $fm->where('ativo','=','s')->get()->count();
         $users->inativos = $fm->where('ativo','=','n')->get()->count();
-        // dd($user);
         $ret['user'] = $user;
         $ret['user_totais'] = $users;
         $ret['arr_titulo'] = $arr_titulo;
@@ -501,37 +529,74 @@ class UserController extends Controller
         }
         return $ret;
     }
-    public function index()
+    public function index(User $user)
     {
-        $ajax = isset($_GET['ajax'])?$_GET['ajax']:'n';
-        $user = $this->user;
         $this->authorize('is_admin', $user);
+        $ajax = isset($_GET['ajax'])?$_GET['ajax']:'n';
         $title = 'Usuários Cadastrados';
         $titulo = $title;
         $queryUsers = $this->queryUsers($_GET);
         $queryUsers['config']['exibe'] = 'html';
         $routa = $this->routa;
         $view = $this->view;
-
-        //REGISTRAR EVENTOS
-        (new EventController)->listarEvent(['tab'=>$this->tab,'this'=>$this]);
-        $ret = [
-            'dados'=>$queryUsers['user'],
-            'title'=>$title,
-            'titulo'=>$titulo,
-            'campos_tabela'=>$queryUsers['campos'],
-            'user_totais'=>$queryUsers['user_totais'],
-            'titulo_tabela'=>$queryUsers['tituloTabela'],
-            'arr_titulo'=>$queryUsers['arr_titulo'],
-            'config'=>$queryUsers['config'],
-            'routa'=>$routa,
-            'view'=>$view,
-            'i'=>0,
-        ];
+        if(isset($_GET['term'])){
+            $ret = false;
+            $ajax = 's';
+            // $campos = $this->campos();
+            if($queryUsers['user']){
+               //$ret = $queryUsers['user'];
+                if(isset($_GET['id_permission']) && empty($_GET['id_permission'])){
+                    $ret[0]['value'] = 'Por favor selecione a Permissão! ';
+                    $ret[0]['id'] = '';
+                }else{
+                    foreach ($queryUsers['user'] as $key => $v) {
+                        $bairro = false;
+                        if(isset($v->config)){
+                            $v->config = Qlib::lib_json_array($v->config);
+                            if(isset($v->config['celular'])){
+                                $v->celular = $v->config['celular'];
+                            }
+                        }
+                        if($id_permission = $v->id_permission){
+                            $permission = Qlib::buscaValorDb([
+                                'tab'=>'permissions',
+                                'campo_bus'=>'id',
+                                'valor'=>$id_permission,
+                                'select'=>'name',
+                            ]);
+                            $ret[$key]['dados'] = $v;
+                        }
+                        $nome_quadra = false;
+                        $ret[$key]['value'] = ' Usuario: '.$v->name.' | E-mail: '.$v->email;
+                        if($this->routa=='fornecedores'){
+                            $ret[$key]['value'] .= ' CNPJ: '.$v->cnpj;
+                        }
+                    }
+                }
+            }else{
+                $ret[0]['value'] = 'Usuario não encontrado. Cadastrar agora?';
+                $ret[0]['id'] = 'cad';
+            }
+        }else{
+            $ret = [
+                'dados'=>$queryUsers['user'],
+                'title'=>$title,
+                'titulo'=>$titulo,
+                'campos_tabela'=>$queryUsers['campos'],
+                'user_totais'=>$queryUsers['user_totais'],
+                'titulo_tabela'=>$queryUsers['tituloTabela'],
+                'arr_titulo'=>$queryUsers['arr_titulo'],
+                'config'=>$queryUsers['config'],
+                'routa'=>$routa,
+                'view'=>$view,
+                'url'=>$this->url,
+                'i'=>0,
+            ];
+        }
         if($ajax=='s'){
             return response()->json($ret);
         }else{
-            return view($routa.'.index',$ret);
+            return view($this->view.'.index',$ret);
         }
     }
     public function create(User $user)

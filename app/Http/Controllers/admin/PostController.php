@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\LanceController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\LeilaoController;
 use App\Http\Controllers\wp\ApiWpController;
 use App\Http\Requests\StorePostRequest;
@@ -747,43 +747,27 @@ class PostController extends Controller
         return $ret;
     }
     public function campos_orcamentos($post_id=false){
-        $hidden_editor = '';
+        $ac = 'cad';
         $data = false;
         $user = Auth::user();
         if($post_id){
             $data = Post::Find($post_id);
+            if($data->count()){
+                $data = $data->toArray();
+                $ac = 'alt';
+            }
         }
-        if(Qlib::qoption('editor_padrao')=='laraberg'){
-            $hidden_editor = 'hidden';
+        if($ac=='cad'){
+            $data['post_title'] = 'Novo orçamento';
         }
+
         $ret = [
             'ID'=>['label'=>'Id','active'=>true,'type'=>'hidden','exibe_busca'=>'d-block','event'=>'','tam'=>'2'],
-            'post_type'=>['label'=>'tipo de post','active'=>false,'type'=>'hidden','exibe_busca'=>'d-none','event'=>'','tam'=>'2','value'=>$this->post_type],
             'token'=>['label'=>'token','active'=>false,'type'=>'hidden','exibe_busca'=>'d-block','event'=>'','tam'=>'2'],
+            'guid'=>['label'=>'cliente','active'=>false,'type'=>'hidden','exibe_busca'=>'d-block','event'=>'','tam'=>'2'],
+            'post_type'=>['label'=>'tipo de post','active'=>false,'type'=>'hidden','exibe_busca'=>'d-none','event'=>'','tam'=>'2','value'=>$this->post_type],
             'post_date'=>['label'=>'Data','active'=>true,'type'=>'hidden_text','exibe_busca'=>'d-block','event'=>'','tam'=>'6'],
-            // 'url_view'=>[
-            //     'label'=>__('Link no site'),
-            //     'type'=>'html',
-            //     'active'=>false,
-            //     'script'=>'admin.posts.link_view',
-            //     'script_show'=>'admin.posts.link_view',
-            //     'dados'=>$data,
-            // ],
-            // 'config[tipo_pagina]'=>[
-            //     'label'=>'Tipo de página*',
-            //     'active'=>true,
-            //     'type'=>'select',
-            //     'arr_opc'=>Qlib::get_tipos('tipos_paginas'),'exibe_busca'=>'d-block',
-            //     'event'=>'required',
-            //     'tam'=>'4',
-            //     'exibe_busca'=>true,
-            //     'option_select'=>true,
-            //     'class'=>'',
-            //     'value'=>@$_GET['config']['tipo_pagina'],
-            //     'cp_busca'=>'config][tipo_pagina',
-            // ],
-            // 'post_name'=>['label'=>'Slug','active'=>false,'placeholder'=>'Ex.: nome-do-post','type'=>'text','exibe_busca'=>'d-block','event'=>'type_slug=true','tam'=>'8'],
-            'post_title'=>['label'=>'Titulo','active'=>true,'placeholder'=>'Ex.: Nome da página ','type'=>'text','exibe_busca'=>'d-block','event'=>'onkeyup=lib_typeSlug(this)','tam'=>'12'],
+            'post_title'=>['label'=>'Titulo','active'=>true,'value'=>@$data['post_title'],'placeholder'=>'Ex.: Nome da página ','type'=>'text','exibe_busca'=>'d-block','event'=>'onkeyup=lib_typeSlug(this)','tam'=>'12'],
             // 'post_excerpt'=>['label'=>'Descriação curta','active'=>false,'type'=>'textarea','exibe_busca'=>'d-block','event'=>$hidden_editor,'tam'=>'12','class_div'=>'','class'=>'','placeholder'=>__('Escreva seu conteúdo aqui..')],
             // 'post_content'=>['label'=>'Conteudo','active'=>false,'type'=>'textarea','exibe_busca'=>'d-block','event'=>$hidden_editor,'tam'=>'12','class_div'=>'','class'=>'editor-padrao summernote','placeholder'=>__('Escreva seu conteúdo aqui..')],
             // 'config[permission][]'=>[
@@ -795,22 +779,35 @@ class PostController extends Controller
             //     'tam'=>'12',
             //     'cp_busca'=>'config][permission'
             // ],
-            'post_status'=>['label'=>'Status','active'=>true,'type'=>'chave_checkbox','value'=>'publish','valor_padrao'=>'publish','exibe_busca'=>'d-block','event'=>'','tam'=>'3','arr_opc'=>['aguardando'=>'Aguardando','resolvido'=>'Resolvido']],
+            // 'post_status'=>['label'=>'Status','active'=>true,'type'=>'chave_checkbox','value'=>'publish','valor_padrao'=>'publish','exibe_busca'=>'d-block','event'=>'','tam'=>'3','arr_opc'=>['aguardando'=>'Aguardando','resolvido'=>'Resolvido']],
+            'post_status'=>[
+                'label'=>'Status*',
+                'active'=>true,
+                'type'=>'select',
+                'arr_opc'=>Qlib::get_tipos('status_orcamentos'),
+                'exibe_busca'=>'d-block',
+                'event'=>'required',
+                'tam'=>'12',
+                'exibe_busca'=>true,
+                'option_select'=>true,
+                'class'=>'',
+                // 'value'=>@$_GET['config']['tipo_pagina'],
+            ],
+
         ];
-        $config_orc=[];
         if(isset($data['token'])){
-            $oc = (new OrcamentoController)->orcamento_html($data['token']);
+            if(request()->segment(4)=='edit'){
+                $oc = (new OrcamentoController)->orcamento_html($data['token'],'table_only');
+            }else{
+                $oc = (new OrcamentoController)->orcamento_html($data['token']);
+            }
             $data['orcamento_html'] = $oc;
         }
         if(isset($data['config']) && is_string($data['config'])){
-            $data['config_orc'] = json_decode($data['config'], true);
-            // if(isset($))
+            $data['config'] = json_decode($data['config'], true);
+        }
 
-        }
-        if(Qlib::isAdmin(1)){
-            $ret['token']['type'] = 'hidden_text';
-            $ret['token']['tam'] = '6';
-        }
+        $ret['config[matricula]']   =   ['label'=>'Matrícula','active'=>true,'placeholder'=>'XXXXX','type'=>'text','exibe_busca'=>'d-block','event'=>'required maxlength=5 style=text-transform:uppercase','tam'=>'12','cp_busca'=>'config][matricula','title'=>'Número da matricula da aeronave'];
         $ret['add_orcamentos'] = [
             'label'=>__('Orçamentos'),
             'type'=>'html',
@@ -819,6 +816,97 @@ class PostController extends Controller
             'script_show'=>'admin.orcamentos.show_orcamentos',
             'dados'=>$data,
         ];
+        if($ac=='cad'){
+            $ret['post_title']['type'] = 'hidden';
+            $ret['post_date']['type'] = 'hidden';
+            // $ret['post_date']['value'] = Qlib::dtBanco(Qlib::dataLocal());
+            $ret['post_status']['type'] = 'hidden';
+            $ret['post_status']['value'] = 'aguardando';
+            $rf = 'fornecedores';
+            // $userC = new UserController(['route'=>$rf]);
+        }
+        // $consulta = isset($data['config']) ? $data['config'] : [];
+        // if(is_string($consulta)){
+        //     if(json_validate($consulta)){
+        //         $consulta = Qlib::lib_json_array($consulta);
+        //     }
+        // }
+        // if(is_array($consulta)){
+        //     $consulta = Qlib::encodeArray($consulta);
+        // }
+        $consulta = Qlib::get_postmeta($post_id,'consulta_rab',true);
+        $ret['config[consulta]']         =   ['label'=>'Consulta:','active'=>false,'placeholder'=>'','type'=>'hidden','exibe_busca'=>'d-block','event'=>'required ','tam'=>'12','cp_busca'=>'config][consulta','value'=>$consulta];
+        if($ac=='alt'){
+            $ret['config[ddi]']         =   ['label'=>'ddi','active'=>true,'placeholder'=>'','type'=>'hidden','exibe_busca'=>'d-block','event'=>'required ','tam'=>'12','cp_busca'=>'config][ddi','title'=>''];
+            $ret['config[whatsapp]']     =   ['label'=>'whatsapp','active'=>true,'placeholder'=>'','type'=>'hidden','exibe_busca'=>'d-block','event'=>'required ','tam'=>'12','cp_busca'=>'config][whatsapp','title'=>''];
+
+        }
+        $ret['config[servicos]'] = [
+            'label'=>'Serviços*',
+            'active'=>true,
+            'type'=>'select',
+            'arr_opc'=>Qlib::sql_array("SELECT * FROM posts WHERE post_status='publish' AND post_type='servicos'",'post_title','post_title'),'exibe_busca'=>'d-block',
+            'event'=>'required',
+            'tam'=>'12',
+            'show'=>false,
+            'exibe_busca'=>true,
+            'option_select'=>true,
+            'class'=>'select2',
+            // 'value'=>@$_GET['config']['servico'],
+            'cp_busca'=>'config][servicos',
+        ];
+        $userC = new UserController();
+        $label1 = 'Nome do solicitante';
+        $ret['guid']=[
+            'label'=>$label1,
+            'active'=>false,
+            'type'=>'html_vinculo',
+            'exibe_busca'=>'d-none',
+            'event'=>'',
+            'tam'=>'12',
+            'script'=>'',
+            'data_selector'=>[
+                'campos'=>$userC->campos(),
+                'route_index'=>route('users.index'),
+                'id_form'=>'frm-users',
+                // 'tipo'=>'array', // int para somente um ou array para vários
+                'tipo'=>'text', // int para somente um ou array para vários
+                'action'=>route('users.store'),
+                'campo_id'=>'id',
+                'campo_bus'=>'name',
+                'campo'=>'guid',
+                'value'=>[],
+                'label'=>'Informações do cliente',
+                'table'=>[
+                    //'id'=>['label'=>'Id','type'=>'text'],
+                    'name'=>['label'=>'Nome','type'=>'text', //campos que serão motands na tabela
+                    'conf_sql'=>[
+                        'tab'=>'users',
+                        'campo_bus'=>'id',
+                        'select'=>'name',
+                        'param'=>['name','email'],
+                        ]
+                    ],
+                    'email'=>['label'=>'Email','type'=>'text'], //campos que serão motands na tabela
+                ],
+                'tab' =>'users',
+                'placeholder' =>'Digite somente o nome do '.$label1.'...',
+                'janela'=>[
+                    'url'=>route('users.create').'',
+                    // 'param'=>['name','cnpj','email'],
+                    'param'=>[],
+                    'form-param'=>'',
+                ],
+                'salvar_primeiro' =>false,//exigir cadastro do vinculo antes de cadastrar este
+            ],
+            'script' => false,//'familias.loteamento', //script admicionar
+        ];
+        if(Qlib::isAdmin(1)){
+            $ret['token']['type'] = 'hidden_text';
+            $ret['token']['tam'] = '6';
+        }
+        $ret['obs'] = ['label'=>'Descrição','active'=>false,'type'=>'textarea','exibe_busca'=>'d-block','event'=>'','tam'=>'12','class_div'=>'','class'=>'editor-padrao summernote','value'=>@$data['post_content'],'show'=>false,'placeholder'=>__('Escreva seu conteúdo aqui..')];
+
         return $ret;
     }
     public function campos_menus($sec=false){
@@ -933,6 +1021,8 @@ class PostController extends Controller
                 $title = __('Cadastro de paginas');
             }elseif($sec=='menus'){
                 $title = __('Cadastro de menus');
+            }elseif($sec=='orcamentos'){
+                $title = __('Cadastro de orçamentos');
             }elseif($sec=='pacotes_lances'){
                 $title = __('Cadastro de pacotes');
             }else{
@@ -1044,10 +1134,30 @@ class PostController extends Controller
         $userLogadon = Auth::id();
         $dados['post_author'] = $userLogadon;
         $dados['token'] = !empty($dados['token'])?$dados['token']:uniqid();
-        $dados['post_status'] = isset($dados['post_status'])?$dados['post_status']:'pending';
+        $dados['post_status'] = isset($dados['post_status']) ? $dados['post_status']:'pending';
+        $dados['config'] = isset($dados['config']) ? $dados['config']:[];
+        if($dados['post_date']==null || $dados['post_date']==false){
+            unset($dados['post_date']);
+        }
+        // $dados['post_date'] = isset($dados['post_date'])?$dados['post_date']:Qlib::dtBanco(Qlib::dataLocal());
         $origem = isset($dados['config']['origem'])?$dados['config']['origem']:false;
-        // dd($dados);
-        $salvar = Post::create($dados);
+        if($this->routa=='orcamentos'){
+            $validatedData = $request->validate([
+                'guid' => ['required'],
+            ],[
+                'guid.required'=>__('O nome do solicitante é obrigatório'),
+            ]);
+            $id_cliente = isset($dados['guid']) ? $dados['guid'] : false;
+            $obs = isset($dados['obs']) ? $dados['obs'] : false;
+            $token = $dados['token'];
+            // dd($id_cliente);
+            $salvar = (new OrcamentoController)->salvarOrcamento($id_cliente,[
+                'token'=>$token,
+                'obs'=>$obs,
+            ],$dados['config']);
+        }else{
+            $salvar = Post::create($dados);
+        }
         $sm = false;
         if(isset($salvar->id) && $salvar->id){
             $mens = $this->label.' cadastrado com sucesso!';
@@ -1394,15 +1504,40 @@ class PostController extends Controller
         }
         $atualizar=false;
         if(!empty($data)){
-            $contrato = $lc->get_data_contrato(@$data['config']['contrato']);
-            if(isset($contrato['post_title'])){
-                if(isset($contrato['config']['total_horas'])){
-                    $data['post_title'] = $contrato['config']['total_horas'].' '.__('horas de voo');
-                }else{
-                    $data['post_title'] = $contrato['post_title'];
+            // $contrato = $lc->get_data_contrato(@$data['config']['contrato']);
+            // if(isset($contrato['post_title'])){
+            //     if(isset($contrato['config']['total_horas'])){
+            //         $data['post_title'] = $contrato['config']['total_horas'].' '.__('horas de voo');
+            //     }else{
+            //         $data['post_title'] = $contrato['post_title'];
+            //     }
+            // }
+            if($this->routa=='orcamentos'){
+                $validatedData = $request->validate([
+                    'guid' => ['required'],
+                ],[
+                    'guid.required'=>__('O nome do solicitante é obrigatório'),
+                ]);
+                $id_cliente = isset($dados['guid']) ? $dados['guid'] : false;
+                $obs = isset($dados['obs']) ? $dados['obs'] : false;
+                $token = $dados['token'];
+                $cfg = $dados['config'];
+                if(is_string($cfg)){
+                    if(json_validate($cfg)){
+                        $cfg = Qlib::lib_json_array($cfg);
+                    }
                 }
+                $atualizar = (new OrcamentoController)->salvarOrcamento($id_cliente,[
+                    'token'=>$token,
+                    'obs'=>$obs,
+                ],$cfg);
+                if($atualizar['exec']){
+                    unset($atualizar['redirect']);
+                    return $atualizar;
+                }
+            }else{
+                $atualizar=Post::where('id',$id)->update($data);
             }
-            $atualizar=Post::where('id',$id)->update($data);
             if($atualizar){
                 $mens = $this->label.' cadastrado com sucesso!';
                 $color = 'success';

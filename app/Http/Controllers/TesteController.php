@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\ContratosController;
 use App\Http\Controllers\admin\OrcamentoController;
 use App\Http\Controllers\admin\PostController;
 use App\Http\Controllers\admin\QuickCadController;
+use App\Http\Controllers\admin\ZapsingController;
 use App\Http\Controllers\BacklistController;
 use App\Jobs\NotificWinnerJob;
 use App\Jobs\SendEmailJob;
@@ -111,6 +112,71 @@ class TesteController extends Controller
             $tm =$link.'<br>';
             // $ret = $link;
             $ret = $tm.'<a href="'.$link.'" target="_blank">Acessar</a>';
+        }elseif($opc==3){
+            //zapsing
+            $titulo = 'Meu teste 06';
+            $conteudo = Qlib::get_post_content(10);// 'Meu teste 06';
+            $external_id = "11/12/2024 06";
+            $ret = (new ZapsingController)->post([
+                "gerar_pdf" =>[
+                    'titulo'=>$titulo,
+                    'conteudo'=>$conteudo,
+                ],
+                "body" => [
+                    "name" => $titulo,
+                    "url_pdf" => "https://zapsign.s3.amazonaws.com/2022/1/pdf/63d19807-cbfa-4b51-8571-215ad0f4eb98/ca42e7be-c932-482c-b70b-92ad7aea04be.pdf",
+                    "external_id" => $external_id,
+                    "signers" => [
+                        [
+                            "name" => "Fernando Queta",
+                            "email" => "quetafernando1@gmail.com",
+                            "cpf" => "12345678909",
+                            "send_automatic_email" => true,
+                            "send_automatic_whatsapp" => true,
+                            "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
+                            "order_group" => 2,
+                        ],
+                        [
+                            "name" => "Programador teste",
+                            "email" => "ger.maisaqui3@gmail.com",
+                            "cpf" => "00000000191",
+                            "send_automatic_email" => true,
+                            "send_automatic_whatsapp" => true,
+                            "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
+                            "order_group" => 1,
+                        ],
+                        // [
+                        //     "name" => "Programador teste",
+                        //     "email" => "ger.maisaqui3@gmail.com",
+                        //     "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
+                        //     "cpf" => "00000000191",
+                        //     "send_automatic_email" => true,
+                        //     "send_automatic_whatsapp" => false,
+                        //     "order_group" => 1,
+                        //     "custom_message" => "",
+                        //     "phone_country" => "55",
+                        //     "phone_number" => "32991648202",
+                        //     "lock_email" => false,
+                        //     "blank_email" => false,
+                        //     "hide_email" => false,
+                        //     "lock_phone" => false,
+                        //     "blank_phone" => false,
+                        //     "hide_phone" => false,
+                        //     "lock_name" => false,
+                        //     "require_cpf" => false,
+                        //     "require_selfie_photo" => true,
+                        //     "require_document_photo" => true,
+                        //     "selfie_validation_type" => "liveness-document-match",
+                        //     "selfie_photo_url" => "",
+                        //     "document_photo_url" => "",
+                        //     "document_verse_photo_url" => "",
+                        //     "qualification" => "",
+                        //     "external_id" => "",
+                        //     "redirect_link" => ""
+                        // ]
+                    ],
+                ]
+            ]);
         }else{
 
             $subject = 'SOLICITAÇÃO DE AGENDAMENTO DE MANUTENÇÃO';

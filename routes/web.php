@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\admin\EventController;
 use App\Http\Controllers\admin\OrcamentoController;
+use App\Http\Controllers\admin\PdfController;
 use App\Http\Controllers\admin\QuickCadController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -133,18 +134,18 @@ Route::prefix('admin')->group(function(){
         Route::post('/trash',['\App\Http\Controllers\admin\mediaController','trash'])->name('trash.media');
         // Route::get('/ajax',[App\Http\Controllers\TesteController::class,'ajax'])->name('teste.ajax');
     });
-    Route::resource('pacotes_lances','\App\Http\Controllers\admin\PostController',['parameters' => [
-        'pacotes_lances' => 'id'
-    ]]);
+    // Route::resource('pacotes_lances','\App\Http\Controllers\admin\PostController',['parameters' => [
+    //     'pacotes_lances' => 'id'
+    // ]]);
     Route::resource('paginas','\App\Http\Controllers\admin\PostController',['parameters' => [
         'paginas' => 'id'
     ]]);
     Route::resource('categorias','\App\Http\Controllers\admin\categoryController',['parameters' => [
         'categorias' => 'id'
     ]]);
-    Route::resource('leiloes_adm','\App\Http\Controllers\admin\PostController',['parameters' => [
-        'leiloes_adm' => 'id'
-    ]]);
+    // Route::resource('leiloes_adm','\App\Http\Controllers\admin\PostController',['parameters' => [
+    //     'leiloes_adm' => 'id'
+    // ]]);
     Route::resource('componentes','\App\Http\Controllers\admin\PostController',['parameters' => [
         'componentes' => 'id'
     ]]);
@@ -163,8 +164,10 @@ Route::prefix('admin')->group(function(){
     Route::resource('menus','\App\Http\Controllers\admin\PostController',['parameters' => [
         'menus' => 'id'
     ]]);
-    // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home.admin');
-    // return redirect()->route('login');
+    //rotas para testes
+    Route::get('/salvar-pdf', [PdfController::class, 'salvarPdf'])->middleware('auth')->name('salvar.pdf');
+    Route::get('/gerar-pdf', [PdfController::class, 'gerarPdf'])->middleware('auth')->name('gerar.pdf');
+
 });
 Route::get('/', [App\Http\Controllers\siteController::class, 'index'])->name('index');
 
@@ -211,13 +214,13 @@ Route::prefix('ajax')->group(function(){
     Route::post('/enviar-contato',[ContatoController::class,'enviar_contato'])->name('enviar.contato');
     Route::post('/pre-cadastro-escola',[UserController::class,'pre_cadastro_escola'])->name('user.pre_cadastro_escola');
     Route::post('/get-rab',[OrcamentoController ::class,'get_rab'])->name('ajax.orcamento.rab');
+    Route::get('/get-aeronave/{matricula}',[OrcamentoController ::class,'get_info_by_matricula'])->name('ajax.get_aeronave');
     Route::post('/enviar-agendamento',[OrcamentoController ::class,'enviar_orcamento'])->name('orcamento.enviar');
 });
 Route::prefix('notification')->group(function(){
     Route::get('/index',[App\Http\Controllers\NotificationController::class,'index'])->name('notification.index');
     // Route::post('/notification',[App\Http\Controllers\NotificationController::class,'receive_ajax']);
 });
-
 //inicio Rotas de verificação
 Route::get('/email/verify', function () {
     // return view('auth.verify');

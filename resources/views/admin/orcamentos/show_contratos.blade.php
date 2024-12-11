@@ -4,6 +4,9 @@
         $data = isset($config['assinatura']['data']) ? $config['assinatura']['data'] : '';
         $ip = isset($config['assinatura']['ip']) ? $config['assinatura']['ip'] : '';
     @endphp
+    @if ($aceito_termo == 's')
+
+
         <div class="card card-primary card-outline mb-5">
             <div class="card-header">
                 <h3 class="card-title">{{__('Arquivos')}}</h3>
@@ -33,4 +36,5 @@
                 </div>
             </div>
         </div>
+    @endif
 @endcan

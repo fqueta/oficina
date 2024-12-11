@@ -186,9 +186,16 @@
                             @elseif(isset($vd['cp_busca']) && !empty($vd['cp_busca']))
                                 @php
                                     $cp = explode('][',$vd['cp_busca']);
-                                @endphp
-                                @if (isset($cp[1]))
-                                    <td class="{{$cp[1]}}" title="{{ @$val[$cp[0]][$cp[1]] }}">{{ @$val[$cp[0]][$cp[1]] }}</td>
+                                    if(is_string($val[$cp[0]])){
+                                        if(json_validate($val[$cp[0]])){
+                                            $val[$cp[0]] = json_decode($val[$cp[0]],true);
+                                        }
+                                    }
+                                    @endphp
+                                @if (isset($cp[1]) && isset($val[$cp[0]][$cp[1]]) && is_string($val[$cp[0]][$cp[1]]))
+                                <td class="{{$cp[1]}}" title="{{ @$val[$cp[0]][$cp[1]] }}">
+                                        {{ @$val[$cp[0]][$cp[1]] }}
+                                    </td>
                                 @endif
                             @else
                                 @php

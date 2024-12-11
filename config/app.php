@@ -17,6 +17,8 @@ return [
     'name' => env('APP_NAME', 'Oficina ACJF'),
     'id_app' => env('ID_APP', 'oficina'),
     'last_update' => '03/12/2024',
+    'zapsing_url_api' => env('ZAPSING_URL_API', ''),
+    'zapsing_id' => env('ZAPSING_ID', ''),
     /*
     |--------------------------------------------------------------------------
     | Application Environment

@@ -304,31 +304,6 @@
             $(imp).insertAfter('[name="matricula"]');
         }
     }
-    function render_tabela_rab(obj,consulta){
-        try {
-            var tem1 = '<table class="table"><thead><tr><th colspan="2">Informações da Aeronave</th></tr></thead><tbody>{tbody}</tbody></table>',tem2='<tr><td>{key}</td><td>{value}</td></tr>',tr='';
-            if(typeof obj == 'object'){
-                for (const [key, value] of Object.entries(obj)) {
-                    tr += tem2.replace('{key}',key);
-                    tr = tr.replace('{value}',value);
-                    if(key=='Matrícula'){
-                        $('#config_matricula').val(value);
-                    }
-                    console.log(`${key}: ${value}`);
-                }
-                console.log(obj);
 
-                var ret = tem1.replace('{tbody}',tr);
-                $('.retorno-pesquisa').html(ret).removeClass('d-none');
-                $('.etp-1').hide();
-                $('.etp-2').show();
-                $('#config_consulta').val(consulta);
-            }
-        } catch (error) {
-            console.log(error);
-
-        }
-
-    }
 </script>
 <!-- Shortcode: END -->

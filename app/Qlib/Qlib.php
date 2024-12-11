@@ -1220,6 +1220,25 @@ class Qlib
         return $ret;
     }
     /**
+     * Metodo para retornar o valor do campo post_content de um determindo post
+     * @param string $post_id
+     * @return string $resultado do post
+     */
+    static function get_post_content($post_id){
+        $ret = false;
+        $tab = 'posts';
+        $d = DB::table($tab)->select('post_content')->where('ID',$post_id)->get();
+        if($d->count()){
+            $ret = $d[0]->post_content;
+        }else{
+            $post_id = self::get_id_by_token($post_id);
+            if($post_id){
+                $ret = self::get_post_content($post_id);
+            }
+        }
+        return $ret;
+    }
+    /**
      * Metodo buscar o post_id com o token
      * @param string $token
      * @return string $ret;

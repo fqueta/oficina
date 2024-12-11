@@ -22,6 +22,30 @@ class OrcamentoController extends Controller
         $this->campo_assinatura = 'assinatura_termo';
         $this->campo_ttassinado = 'texto_termo_assinado';
     }
+    /**
+     * Metodo para retornar as informações de propriedade de uma aeronave apartidar da consulta na RAB
+     * @param string $matricula a matricula da aeronave
+     */
+    public function get_info_by_matricula($matricula){
+        $url = 'https://api.aeroclubejf.com.br/api/v1/rab?matricula='.$matricula;
+        try {
+            $json = file_get_contents($url);
+            if($json){
+                $ret = Qlib::lib_json_array($json);
+                if($ret['exec']){
+                    $ret['color'] = 'success';
+                    $ret['mens'] = 'Aeronave Localizada';
+                    $ret['consulta'] = Qlib::codificarBase64($json);
+                }
+            }
+        } catch (\Throwable $e) {
+            $ret['exec'] = false;
+            $ret['error'] = $e->getMessage();
+            $ret['color'] = 'danger';
+            $ret['mens'] = 'Aeronave não encontrada na Anac tente mais tarde';
+        }
+        return $ret;
+    }
     public function get_rab(Request $request){
         $matricula = $request->get('matricula') ? $request->get('matricula') : null;
         $config = $request->get('config') ? $request->get('config') : null;
@@ -33,19 +57,20 @@ class OrcamentoController extends Controller
         // $dg = $request->all();
         $passa_consulta = isset($config['consulta']) ? $config['consulta'] : '';
         if($matricula && $api == 'true' && (!$passa_consulta || empty($passa_consulta)) ){
-            $url = 'https://api.aeroclubejf.com.br/api/v1/rab?matricula='.$matricula;
-            $json = file_get_contents($url);
-            if($json){
-                $ret = Qlib::lib_json_array($json);
-                if($ret['exec']){
-                    $ret['color'] = 'success';
-                    $ret['mens'] = 'Aeronave Localizada';
-                    $ret['consulta'] = Qlib::codificarBase64($json);
-                }else{
-                    $ret['color'] = 'danger';
-                    $ret['mens'] = 'Aeronave não encontrada na Anac tente mais tarde';
-                }
-            }
+            // $url = 'https://api.aeroclubejf.com.br/api/v1/rab?matricula='.$matricula;
+            // $json = file_get_contents($url);
+            // if($json){
+            //     $ret = Qlib::lib_json_array($json);
+            //     if($ret['exec']){
+            //         $ret['color'] = 'success';
+            //         $ret['mens'] = 'Aeronave Localizada';
+            //         $ret['consulta'] = Qlib::codificarBase64($json);
+            //     }else{
+            //         $ret['color'] = 'danger';
+            //         $ret['mens'] = 'Aeronave não encontrada na Anac tente mais tarde';
+            //     }
+            // }
+            $ret = $this->get_info_by_matricula($matricula);
             $ret['salv'] = $this->salverContato($request);
         }else{
 
@@ -125,6 +150,8 @@ class OrcamentoController extends Controller
      * Metodo para salver uma solicitação de oraçamento do formulario do fornt End
      * @param string $config base64
      * @param string $id_cliente
+     * @param array $d para informar o token, obs
+     * @param array $config contendo o campo da consulta RAB codificado em json e base64 feito pelo metodo Qlib::encodeArray();
      * @return array $ret
      */
     public function salvarOrcamento($id_cliente,$d,$config){
@@ -132,6 +159,7 @@ class OrcamentoController extends Controller
         $ret['mens'] = __('Erro ao enviar orçamento!');
         $ret['color'] = 'danger';
         $arr_config    = $config;
+        $consulta = isset($config['consulta']) ? $config['consulta'] : '';
         $arr_config['consulta'] = Qlib::decodeArray($config['consulta']);
         $ret['arr_config'] = $arr_config;
         $post_type = 'orcamentos';
@@ -172,6 +200,8 @@ class OrcamentoController extends Controller
                 //Salvar o contrato
                 $post_id = Qlib::get_id_by_token($token);
                 $ret['termo'] = $this->salvar_aceito_termo(['id_cliente'=>$id_cliente,'post_id'=>$post_id,'meta'=>@$d['meta']]);
+                //salvar a consulta
+                $ret['salvar_consulta'] = Qlib::update_postmeta($post_id,'consulta_rab',$consulta);
                 if(is_array($email_admin)){
                     $from = 'suporte@aeroclubejf.com.br';
                     // dd($email_admin);
@@ -298,13 +328,22 @@ class OrcamentoController extends Controller
                 ';
                 $tm2 = ' - <b>{label}:</b> {value}<br>';
             }else{
-                $tm1 .= '
-                <table class="table">
-                    {tbody}
-                </table>
-                <p><b>'.__('Serviço').'</b>: {servicos}</p>
-                <p><b>'.__('Descrição').'</b>:<br>{obs}</p>
-                ';
+                if($type == 'table_only'){
+                    $tm1 = '
+                    <table class="table">
+                        {tbody}
+                    </table>';
+                }else{
+                    $tm1 .= '
+                    <table class="table">
+                        {tbody}
+                    </table>';
+
+                    $tm1 .= '
+                    <p><b>'.__('Serviço').'</b>: {servicos}</p>
+                    <p><b>'.__('Descrição').'</b>:<br>{obs}</p>
+                    ';
+                }
                 $tm2 = '
                 <tr>
                     <th>{label}</th>
@@ -323,7 +362,10 @@ class OrcamentoController extends Controller
             // if($telefone && $type=='whatsapp'){
 
             // }
-            $telefone .= ' '.isset($config['whatsapp']) ? $config['whatsapp'] : '';
+            if(isset($config['whatsapp'])){
+                $telefone .= ' ';
+                $telefone .= $config['whatsapp'] ? $config['whatsapp'] : '';
+            }
             $servicos = isset($dar['config']['servicos']) ? $dar['config']['servicos'] : false;
             $arr = isset($dar['config']['consulta']['data']) ? $dar['config']['consulta']['data'] : [];
 

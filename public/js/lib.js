@@ -1000,24 +1000,29 @@ function submitFormularioCSRF(objForm,funCall,funError){
     objForm.submit();
 }
 function lib_funError(res){
+    // var mens = '';
+    // Object.entries(res).forEach(([key, value]) => {
+    //     //console.log(key + ' ' + value);
+    //     var s = $('[name="'+key+'"]');
+    //     var v = s.val();
+    //     mens += value+'<br>';
+    //     if(key=='cpf'){
+    //        s.addClass('is-invalid');
+    //     }else{
+    //         if(v=='')
+    //             s.addClass('is-invalid');
+    //         else{
+    //             s.removeClass('is-invalid');
+    //         }
+    //     }
+    // });
+    // lib_formatMensagem('.mens',mens,'danger');
     var mens = '';
-    Object.entries(res).forEach(([key, value]) => {
-        //console.log(key + ' ' + value);
-        var s = $('[name="'+key+'"]');
-        var v = s.val();
+    for (const [key, value] of Object.entries(res)) {
         mens += value+'<br>';
-        if(key=='cpf'){
-           s.addClass('is-invalid');
-        }else{
-            if(v=='')
-                s.addClass('is-invalid');
-            else{
-                s.removeClass('is-invalid');
-            }
-        }
-    });
+        console.log(`${key}: ${value}`);
+    }
     lib_formatMensagem('.mens',mens,'danger');
-
 }
 function modalGeral(id,titulo,conteudo){
     var m = $(id);
@@ -2903,4 +2908,62 @@ function submit_precadastro_site(sel){
         }
     });
 }
+function render_tabela_rab(obj,consulta,ed){
+    try {
+        var tem1 = '<table class="table"><thead><tr><th colspan="2">Informações da Aeronave</th></tr></thead><tbody>{tbody}</tbody></table>',tem2='<tr><td>{key}</td><td>{value}</td></tr>',tr='';
+        if(typeof ed=='undefined'){
+            ed = function(consulta,tabela){
+                $('.retorno-pesquisa').html(tabela).removeClass('d-none');
+                $('.etp-1').hide();
+                $('.etp-2').show();
+                $('#config_consulta').val(consulta);
+                console.log(obj);
+            }
+        }
+        if(typeof obj == 'object'){
+            for (const [key, value] of Object.entries(obj)) {
+                tr += tem2.replace('{key}',key);
+                tr = tr.replace('{value}',value);
+                if(key=='Matrícula'){
+                    $('#config_matricula').val(value);
+                }
+                console.log(`${key}: ${value}`);
+            }
+            var tabela = tem1.replace('{tbody}',tr);
+            ed(consulta,tabela);
+        }
+    } catch (error) {
+        console.log(error);
 
+    }
+}
+function consultaRabAdmin(m){
+    if(typeof m == 'undefined'){
+        m = document.querySelector('[name="config[matricula]"]').value;
+    }
+    // var m = obj.value;
+    getAjax({
+        url:'/ajax/get-aeronave/'+m,
+    },function(res){
+        $('#preload').fadeOut("fast");
+        if(res.consulta){
+            $('[name="config[consulta]"]').val(res.consulta);
+        }
+        if(res.exec){
+            if(res.data && res.consulta){
+                render_tabela_rab(res.data,res.consulta,function(consulta,tabela){
+                    $('.retorno-pesquisa').html(tabela);
+                });
+                // $('#form-agendamento').attr('action','/ajax/enviar-agendamento')
+                // submitEtp2();
+            }
+        }
+        // if(m=res.value.matricula){
+        //     $('[name="matricula"]').val(m);
+        //     $('#txt-matricula').html(m);
+        // }else{
+        //     $('[name="matricula"]').val('');
+        //     $('#txt-matricula').html('');
+        // }
+    });
+}
