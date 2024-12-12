@@ -458,6 +458,11 @@ class OrcamentoController extends Controller
         $titulo = 'Termo de solicitação de orçamento '.$id;
         $matricula  = isset($d['config']['matricula']) ? $d['config']['matricula'] : '';
         $servicos  = isset($d['config']['servicos']) ? $d['config']['servicos'] : '';
+        $id_assinante_oficina = Qlib::qoption('id_assinante_oficina');
+        $da = User::find($id_assinante_oficina);
+        $nome_oficina = isset($da['name']) ? $da['name'] : '';
+        $email_oficina = isset($da['email']) ? $da['email'] : '';
+        $cpf_oficina = isset($da['cpf']) ? $da['cpf'] : '';
         $body = [
             "name" => $titulo,
             "url_pdf" => "https://oficina.aeroclubejf.com.br/storage/pdfs/termo_pdf",
@@ -473,9 +478,9 @@ class OrcamentoController extends Controller
                     "order_group" => 1,
                 ],
                 [
-                    "name" => "Programador teste", //assinatura da oficina
-                    "email" => "ger.maisaqui3@gmail.com",
-                    "cpf" => "00000000191",
+                    "name" => $nome_oficina, //assinatura da oficina
+                    "email" => $email_oficina,
+                    "cpf" => $cpf_oficina,
                     "send_automatic_email" => true,
                     "send_automatic_whatsapp" => false,
                     "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
@@ -490,7 +495,7 @@ class OrcamentoController extends Controller
         $conteudo = str_replace('{matricula}',$matricula,$conteudo);
         $conteudo = str_replace('{servicos}',$servicos,$conteudo);
         $conteudo = str_replace('{orcamento}',$oracamento,$conteudo);
-        // dd($body);
+        dd($body);
         $ret = (new ZapsingController)->post([
             "gerar_pdf" =>[
                 'titulo'=>$titulo,
