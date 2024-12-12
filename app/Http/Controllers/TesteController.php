@@ -106,6 +106,7 @@ class TesteController extends Controller
         // $ret = (new UserController)->ger_select_ddi();
 
         $token = $request->get('token') ? $request->get('token') : '6747455546463';
+        $titulo = $request->get('titulo') ? $request->get('titulo') : 'Meu teste';
         $opc = $request->get('opc') ? $request->get('opc') : 1;
         if($opc==2){
             $link = (new OrcamentoController)->orcamento_html($token,'whatsapp');
@@ -114,9 +115,10 @@ class TesteController extends Controller
             $ret = $tm.'<a href="'.$link.'" target="_blank">Acessar</a>';
         }elseif($opc==3){
             //zapsing
-            $titulo = 'Meu teste 06';
+            $numero = $request->get('numero');
+            $titulo .= ' '.$numero;
             $conteudo = Qlib::get_post_content(10);// 'Meu teste 06';
-            $external_id = "11/12/2024 06";
+            $external_id = "11/12/2024 ".$numero;
             $ret = (new ZapsingController)->post([
                 "gerar_pdf" =>[
                     'titulo'=>$titulo,
