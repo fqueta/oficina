@@ -32,16 +32,16 @@ class ZapsingController extends Controller
             $url_pdf = false;
             if(isset($config['gerar_pdf']['conteudo']) && ($cont=$config['gerar_pdf']['conteudo'])){
                 //$config['gerar_pdf'] = ['titulo' => '','conteudo' =>''];
-                $new_pdf = (new PdfController)->salvarPdf($config['gerar_pdf'],['arquivo'=>'termo_pdf']);
+                $arquivo = isset($config['gerar_pdf']['arquivo']) ? $config['gerar_pdf']['arquivo'] : 'termo.php';
+                $new_pdf = (new PdfController)->salvarPdf($config['gerar_pdf'],['arquivo'=>$arquivo]);
                 $url_pdf = isset($new_pdf['caminho']) ? $new_pdf['caminho'] : false;
                 if($url_pdf){
                     $body["url_pdf"] = $url_pdf;
                 }
             }
-
+            $body["folder_path"] = isset($body["folder_path"]) ? $body["folder_path"] : "/".config('app.id_app');
             $body["lang"] = isset($body["lang"]) ? $body["lang"] : "pt-br";
             $body["brand_logo"] = isset($body["brand_logo"]) ? $body["brand_logo"] : asset(config('adminlte.logo_img'));
-            $body["folder_path"] = isset($body["folder_path"]) ? $body["folder_path"] : "/".config('app.id_app');
             $body["brand_name"] = isset($body["brand_name"]) ? $body["brand_name"] : config('app.name');
             $body["brand_primary_color"] = isset($body["brand_primary_color"]) ? $body["brand_primary_color"] : "#073b5b";
             // $body["disable_signer_emails"] = isset($body["disable_signer_emails"]) ? $body["disable_signer_emails"] : false;
@@ -54,7 +54,6 @@ class ZapsingController extends Controller
             // $body["reminder_every_n_days"] = isset($body["reminder_every_n_days"]) ? $body["reminder_every_n_days"] : 0;
             // $body["allow_refuse_signature"] = isset($body["allow_refuse_signature"]) ? $body["allow_refuse_signature"] : false;
             // $body["disable_signers_get_original_file"] = isset($body["disable_signers_get_original_file"]) ? $body["disable_signers_get_original_file"] : false;
-            // dd($body);
             try {
                 //code...
                 $response = Http::withHeaders([

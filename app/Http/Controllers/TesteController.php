@@ -105,7 +105,7 @@ class TesteController extends Controller
         // $ret['notify'] = (new LeilaoController())->notifica_termino($leilao_id,'ganhador');
         // $ret = (new UserController)->ger_select_ddi();
 
-        $token = $request->get('token') ? $request->get('token') : '6747455546463';
+        $token = $request->get('token') ? $request->get('token') : '675855ed0b876';
         $titulo = $request->get('titulo') ? $request->get('titulo') : 'Meu teste';
         $opc = $request->get('opc') ? $request->get('opc') : 1;
         if($opc==2){
@@ -114,73 +114,79 @@ class TesteController extends Controller
             // $ret = $link;
             $ret = $tm.'<a href="'.$link.'" target="_blank">Acessar</a>';
         }elseif($opc==3){
+            $ret = (new OrcamentoController)->send_to_zapSing($token);
             //zapsing
-            $numero = $request->get('numero');
-            $titulo .= ' '.$numero;
-            $conteudo = Qlib::get_post_content(10);// 'Meu teste 06';
-            $external_id = "11/12/2024 ".$numero;
-            $ret = (new ZapsingController)->post([
-                "gerar_pdf" =>[
-                    'titulo'=>$titulo,
-                    'conteudo'=>$conteudo,
-                ],
-                "body" => [
-                    "name" => $titulo,
-                    "url_pdf" => "https://zapsign.s3.amazonaws.com/2022/1/pdf/63d19807-cbfa-4b51-8571-215ad0f4eb98/ca42e7be-c932-482c-b70b-92ad7aea04be.pdf",
-                    "external_id" => $external_id,
-                    "signers" => [
-                        [
-                            "name" => "Fernando Queta",
-                            "email" => "quetafernando1@gmail.com",
-                            "cpf" => "12345678909",
-                            "send_automatic_email" => true,
-                            "send_automatic_whatsapp" => true,
-                            "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
-                            "order_group" => 2,
-                        ],
-                        [
-                            "name" => "Programador teste",
-                            "email" => "ger.maisaqui3@gmail.com",
-                            "cpf" => "00000000191",
-                            "send_automatic_email" => true,
-                            "send_automatic_whatsapp" => true,
-                            "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
-                            "order_group" => 1,
-                        ],
-                        // [
-                        //     "name" => "Programador teste",
-                        //     "email" => "ger.maisaqui3@gmail.com",
-                        //     "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
-                        //     "cpf" => "00000000191",
-                        //     "send_automatic_email" => true,
-                        //     "send_automatic_whatsapp" => false,
-                        //     "order_group" => 1,
-                        //     "custom_message" => "",
-                        //     "phone_country" => "55",
-                        //     "phone_number" => "32991648202",
-                        //     "lock_email" => false,
-                        //     "blank_email" => false,
-                        //     "hide_email" => false,
-                        //     "lock_phone" => false,
-                        //     "blank_phone" => false,
-                        //     "hide_phone" => false,
-                        //     "lock_name" => false,
-                        //     "require_cpf" => false,
-                        //     "require_selfie_photo" => true,
-                        //     "require_document_photo" => true,
-                        //     "selfie_validation_type" => "liveness-document-match",
-                        //     "selfie_photo_url" => "",
-                        //     "document_photo_url" => "",
-                        //     "document_verse_photo_url" => "",
-                        //     "qualification" => "",
-                        //     "external_id" => "",
-                        //     "redirect_link" => ""
-                        // ]
-                    ],
-                ]
-            ]);
+            // $numero = $request->get('numero');
+            // $titulo .= ' '.$numero;
+            // $conteudo = Qlib::get_post_content(10);// 'Meu teste 06';
+            // $external_id = "11/12/2024 ".$numero;
+            // $ret = (new ZapsingController)->post([
+            //     "gerar_pdf" =>[
+            //         'titulo'=>$titulo,
+            //         'conteudo'=>$conteudo,
+            //     ],
+            //     "body" => [
+            //         "name" => $titulo,
+            //         "url_pdf" => "https://zapsign.s3.amazonaws.com/2022/1/pdf/63d19807-cbfa-4b51-8571-215ad0f4eb98/ca42e7be-c932-482c-b70b-92ad7aea04be.pdf",
+            //         "external_id" => $external_id,
+            //         "signers" => [
+            //             [
+            //                 "name" => "Fernando Queta",
+            //                 "email" => "quetafernando1@gmail.com",
+            //                 "cpf" => "12345678909",
+            //                 "send_automatic_email" => true,
+            //                 "send_automatic_whatsapp" => true,
+            //                 "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
+            //                 "order_group" => 2,
+            //             ],
+            //             [
+            //                 "name" => "Programador teste",
+            //                 "email" => "ger.maisaqui3@gmail.com",
+            //                 "cpf" => "00000000191",
+            //                 "send_automatic_email" => true,
+            //                 "send_automatic_whatsapp" => true,
+            //                 "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
+            //                 "order_group" => 1,
+            //             ],
+            //             // [
+            //             //     "name" => "Programador teste",
+            //             //     "email" => "ger.maisaqui3@gmail.com",
+            //             //     "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
+            //             //     "cpf" => "00000000191",
+            //             //     "send_automatic_email" => true,
+            //             //     "send_automatic_whatsapp" => false,
+            //             //     "order_group" => 1,
+            //             //     "custom_message" => "",
+            //             //     "phone_country" => "55",
+            //             //     "phone_number" => "32991648202",
+            //             //     "lock_email" => false,
+            //             //     "blank_email" => false,
+            //             //     "hide_email" => false,
+            //             //     "lock_phone" => false,
+            //             //     "blank_phone" => false,
+            //             //     "hide_phone" => false,
+            //             //     "lock_name" => false,
+            //             //     "require_cpf" => false,
+            //             //     "require_selfie_photo" => true,
+            //             //     "require_document_photo" => true,
+            //             //     "selfie_validation_type" => "liveness-document-match",
+            //             //     "selfie_photo_url" => "",
+            //             //     "document_photo_url" => "",
+            //             //     "document_verse_photo_url" => "",
+            //             //     "qualification" => "",
+            //             //     "external_id" => "",
+            //             //     "redirect_link" => ""
+            //             // ]
+            //         ],
+            //     ]
+            // ]);
+        }elseif($opc==4){
+            //download file
+            $url = "https://zapsign.s3.amazonaws.com/sandbox/dev/2024/12/pdf/72d30d89-da1f-4e10-9025-3689b03ef3d4/7a773057-05d3-4843-be1d-0fe6bffdb730.pdf?AWSAccessKeyId=AKIASUFZJ7JCTI2ZRGWX&Signature=oRLj2PALoDs1JEkx%2FHm4TV1ZM%2BQ%3D&Expires=1734026017";
+            $external_id = Qlib::createSlug('11/12/2024 07');;
+            $caminhoSalvar = 'pdf/termos_assinados/'.$external_id.'/arquivo.pdf';
+            $ret = Qlib::download_file($url,$caminhoSalvar);
         }else{
-
             $subject = 'SOLICITAÇÃO DE AGENDAMENTO DE MANUTENÇÃO';
             $dc = User::find(1);
             $mensagem =  'Antenção foi solicitado um orçamento por <b>'.$dc['name'].'</b> em '.Qlib::dataLocal();

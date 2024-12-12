@@ -8,6 +8,7 @@ use App\Jobs\SendEmailJob;
 use App\Models\Post;
 use App\Models\User;
 use App\Qlib\Qlib;
+use FontLib\Table\Type\post as TypePost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Stmt\TryCatch;
@@ -413,10 +414,91 @@ class OrcamentoController extends Controller
         // dd($arr_texto);
         return view('admin.orcamentos.termo_assinado',['termo'=>$arr_texto['texto'],'titulo'=>$titulo]);
     }
+    /**
+     * Metodo para contar o numero total de orçamentos
+     */
     public function total_orcamentos($status=''){
         $total = Post::where('post_type','=','orcamentos')
         ->where('post_status','=',$status)
         ->count();
         return $total;
+    }
+    /**
+     * Metodo para retornar um orçamento apartir do token
+     */
+    public function get_orcamento($token){
+        // $id = Qlib::get_id_by_token($token);
+        $d = Post::select('posts.*','users.email','users.name','users.cpf','users.config as config_user')->join('users','posts.guid','=','users.id')->where('posts.token','=',$token)->get();
+        if($d->isNotEmpty()){
+            $d = $d[0]->toArray();
+        }else{
+            return false;
+        }
+        return $d;
+    }
+    /**
+     * Metodo para enviar o termo para zapsing
+     */
+    public function send_to_zapSing($token_orcamento,$orcamento=''){
+        $d = $this->get_orcamento($token_orcamento);
+        $id = isset($d['ID']) ? $d['ID'] : '';
+        $nome = isset($d['name']) ? $d['name'] : '';
+        $token = isset($d['token']) ? $d['token'] : '';
+        $email = isset($d['email']) ? $d['email'] : '';
+        $cpf = $d['cpf'] ? $d['cpf'] : '';
+        $ret = ['exec' => false, 'mens'=>'Orçamento não encontrado','color'=>'danger', 'status'=>'403'];
+        $conteudo = Qlib::get_post_content(10);// 'Meu teste 06';
+        if(!$id){
+            return $ret;
+        }
+        if(!$conteudo){
+            $ret = ['exec' => false, 'mens'=>'Conteudo de termo inválido','color'=>'danger', 'status'=>'403'];
+            return $ret;
+        }
+        $titulo = 'Termo de solicitação de orçamento '.$id;
+        $matricula  = isset($d['config']['matricula']) ? $d['config']['matricula'] : '';
+        $servicos  = isset($d['config']['servicos']) ? $d['config']['servicos'] : '';
+        $body = [
+            "name" => $titulo,
+            "url_pdf" => "https://oficina.aeroclubejf.com.br/storage/pdfs/termo_pdf",
+            "external_id" => $token,
+            "signers" => [
+                [
+                    "name" => $nome,
+                    "email" => $email,
+                    "cpf" => $cpf,
+                    "send_automatic_email" => true,
+                    "send_automatic_whatsapp" => false,
+                    "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
+                    "order_group" => 1,
+                ],
+                [
+                    "name" => "Programador teste", //assinatura da oficina
+                    "email" => "ger.maisaqui3@gmail.com",
+                    "cpf" => "00000000191",
+                    "send_automatic_email" => true,
+                    "send_automatic_whatsapp" => false,
+                    "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
+                    "order_group" => 2,
+                ],
+            ],
+        ];
+        $oracamento = $this->orcamento_html($token,'table');
+        $conteudo = str_replace('{nome}',$nome,$conteudo);
+        $conteudo = str_replace('{email}',$email,$conteudo);
+        $conteudo = str_replace('{cpf}',$cpf,$conteudo);
+        $conteudo = str_replace('{matricula}',$matricula,$conteudo);
+        $conteudo = str_replace('{servicos}',$servicos,$conteudo);
+        $conteudo = str_replace('{orcamento}',$oracamento,$conteudo);
+        // dd($body);
+        $ret = (new ZapsingController)->post([
+            "gerar_pdf" =>[
+                'titulo'=>$titulo,
+                'conteudo'=>$conteudo,
+                'arquivo'=>'termos/'.$token.'/nao_assinado.pdf',
+            ],
+            "body" => $body
+        ]);
+        return $ret;
     }
 }

@@ -15,6 +15,8 @@ use App\Models\Post;
 use App\Models\Qoption;
 use Illuminate\Support\Str;
 use DateTime;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class Qlib
 {
@@ -1540,6 +1542,24 @@ class Qlib
         }else{
             return false;
         }
+    }
+    /**
+     * Metodo para baixar um arquivo remoto e salvar em disco do servidor
+     */
+    static function download_file($url=false,$caminhoSalvar=false){
+        $ret = ['exec'=>false,'mens'=>false,'color'=>'danger','status'=>false];
+        if($url && $caminhoSalvar){
+            $response = Http::get($url);
+
+            if ($response->successful()) {
+                // Salvar no disco local
+                Storage::put($caminhoSalvar, $response->body());
+                $ret = ['exec'=>true,'mens'=>'Arquivo baixado e salvo com sucesso!','color'=>'success','status'=>$response->status()];
+            }else{
+                $ret = ['exec'=>false,'mens'=>'Erro ao baixar o arquivo remoto!','color'=>'danger','status'=>$response->status()];
+            }
+        }
+        return $ret;
     }
 
 }
