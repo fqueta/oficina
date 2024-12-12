@@ -495,7 +495,6 @@ class OrcamentoController extends Controller
         $conteudo = str_replace('{matricula}',$matricula,$conteudo);
         $conteudo = str_replace('{servicos}',$servicos,$conteudo);
         $conteudo = str_replace('{orcamento}',$oracamento,$conteudo);
-        dd($body);
         $ret = (new ZapsingController)->post([
             "gerar_pdf" =>[
                 'titulo'=>$titulo,
