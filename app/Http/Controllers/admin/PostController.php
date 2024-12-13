@@ -1266,7 +1266,9 @@ class PostController extends Controller
                 $orc = new OrcamentoController;
                 $assinatura = Qlib::get_postmeta($id,$orc->campo_assinatura,true);
                 // $config['ttassinado'] = Qlib::get_postmeta($id,$orc->campo_ttassinado);
+                $gerado = Qlib::get_postmeta($id,$orc->campos_gerado,true);
                 $config['assinatura'] = Qlib::lib_json_array($assinatura);
+                $config['gerado'] = Qlib::lib_json_array($gerado);
             }
             // if(!isset$dados['matricula'])
             //     $config['display_matricula'] = 'd-none';

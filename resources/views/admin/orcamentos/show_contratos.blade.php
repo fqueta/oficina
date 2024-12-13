@@ -3,8 +3,11 @@
         $aceito_termo = isset($config['assinatura']['aceito_termo']) ? $config['assinatura']['aceito_termo'] : 'n';
         $data = isset($config['assinatura']['data']) ? $config['assinatura']['data'] : '';
         $ip = isset($config['assinatura']['ip']) ? $config['assinatura']['ip'] : '';
+        $arquivo_gerado = isset($config['gerado']['caminho']) ? $config['gerado']['caminho'] : '';
+        $termo_enviado = false;
+        $token = isset($value['token']) ? $value['token'] : '';
     @endphp
-    @if ($aceito_termo == 's')
+    {{-- @if ($aceito_termo == 's') --}}
 
 
         <div class="card card-primary card-outline mb-5">
@@ -18,9 +21,51 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-3 text-center">
+                    <div class="col-12 text-center">
                         <div class="row">
-                            <div class="col-12">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            {{__('Termo gerado')}}
+                                        </th>
+                                        <th>
+                                            {{__('Termo Enviado')}}
+                                        </th>
+                                        <th>
+                                            {{__('Termo assinado')}}
+                                        </th>
+                                        <th>
+                                            {{__('Ação')}}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @if ($arquivo_gerado)
+                                                <a href="{{$arquivo_gerado}}" class="text-danger" target="_blank" rel="noopener noreferrer">
+                                                    <i class="fas fa-file-pdf fa-2x"></i>
+                                                </a>
+                                            @endif
+                                        </td>
+                                        <td>
+
+                                        </td>
+                                        <td>
+
+                                        </td>
+                                        <td>
+                                            @if (!$termo_enviado)
+                                                <button class="btn btn-primary" onclick="envia_zapSing('{{$token}}')" title="Enviar para assinatura">
+                                                    <i class="fas fa-envelope "></i>
+                                                </button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {{-- <div class="col-12">
                                 <a href="{{route('termo.aceito',@$config['id'])}}?redirect_base={{base64_encode(App\Qlib\Qlib::UrlAtual())}}" title="Termo acento digitalmente em {{$data}}">
                                     <i class="fas fa-file-pdf fa-3x"></i>
                                 </a>
@@ -30,11 +75,11 @@
                             </div>
                             <div class="col-12">
                                 IP: {{$ip}}
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    @endif
+    {{-- @endif --}}
 @endcan

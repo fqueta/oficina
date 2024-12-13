@@ -2967,3 +2967,28 @@ function consultaRabAdmin(m){
         // }
     });
 }
+function envia_zapSing(token){
+    if(!window.confirm('CONFIRMAR ENVIO PARA O CLIENTE?')){
+        return;
+    }
+    getAjax({
+        url:'/ajax/send-to-zapsing',
+        type: 'POST',
+        dataType: 'json',
+        csrf: true,
+        data:{
+            token: token,
+        }
+    },function(res){
+        $('#preload').fadeOut("fast");
+        // $('.mes').html(res.mens);
+        lib_formatMensagem('.mens',res.mens,res.color);
+
+        // if(res.exec){
+        //     $('#info-reserva').remove();
+        // }
+    },function(err){
+        $('#preload').fadeOut("fast");
+        console.log(err);
+    });
+}

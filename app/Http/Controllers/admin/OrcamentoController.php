@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\EnviarEmail;
+use App\Jobs\EnvioZapsingJob;
 use App\Jobs\SendEmailJob;
 use App\Models\Post;
 use App\Models\User;
@@ -17,11 +18,13 @@ class OrcamentoController extends Controller
 {
 
     public $campo_assinatura;
-    public $campo_ttassinado;
+    public $campos_gerado;
+    public $campos_enviado;
     public function __construct()
     {
         $this->campo_assinatura = 'assinatura_termo';
-        $this->campo_ttassinado = 'texto_termo_assinado';
+        $this->campos_gerado = 'termo_gerado';
+        $this->campos_enviado = 'enviado_zapsing';
     }
     /**
      * Metodo para retornar as informações de propriedade de uma aeronave apartidar da consulta na RAB
@@ -236,6 +239,8 @@ class OrcamentoController extends Controller
                 $ret['color'] = 'success';
                 $ret['link_zap'] = $link_zap;
                 $ret['redirect'] = $link_redirect;
+                //Enviar para o zapsing
+                EnvioZapsingJob::dispatch($token);
             } catch (\Throwable $th) {
                 $ret['link_zap'] = $link_zap;
                 $ret['redirect'] = $link_redirect;
@@ -408,7 +413,7 @@ class OrcamentoController extends Controller
         return $ret;
     }
     public function termo_aceito($id){
-        $termo = Qlib::get_postmeta($id,$this->campo_ttassinado,true);
+        $termo = Qlib::get_postmeta($id,$this->campos_gerado,true);
         $titulo = __('Termo assinado!');
         $arr_texto = Qlib::lib_json_array($termo);
         // dd($arr_texto);
@@ -446,8 +451,8 @@ class OrcamentoController extends Controller
         $token = isset($d['token']) ? $d['token'] : '';
         $email = isset($d['email']) ? $d['email'] : '';
         $cpf = $d['cpf'] ? $d['cpf'] : '';
-        $ret = ['exec' => false, 'mens'=>'Orçamento não encontrado','color'=>'danger', 'status'=>'403'];
         $conteudo = Qlib::get_post_content(10);// 'Meu teste 06';
+        $ret = ['exec' => false, 'mens'=>'Orçamento não encontrado','color'=>'danger', 'status'=>'403'];
         if(!$id){
             return $ret;
         }
@@ -488,21 +493,76 @@ class OrcamentoController extends Controller
                 ],
             ],
         ];
+        // $oracamento = $this->orcamento_html($token,'table');
+        // $conteudo = str_replace('{nome}',$nome,$conteudo);
+        // $conteudo = str_replace('{email}',$email,$conteudo);
+        // $conteudo = str_replace('{cpf}',$cpf,$conteudo);
+        // $conteudo = str_replace('{matricula}',$matricula,$conteudo);
+        // $conteudo = str_replace('{servicos}',$servicos,$conteudo);
+        // $conteudo = str_replace('{orcamento}',$oracamento,$conteudo);
+        $gerar_pdf = $this->gerar_termo_orcamento($token,$d,$conteudo,$titulo);
+        $body['url_pdf'] = isset($gerar_pdf['caminho']) ? $gerar_pdf['caminho'] : '';
+        $ret = (new ZapsingController)->post([
+            // "gerar_pdf" =>[
+            //     'titulo'=>$titulo,
+            //     'conteudo'=>$conteudo,
+            //     'arquivo'=>'termos/'.$token.'/nao_assinado.pdf',
+            // ],
+            "body" => $body
+        ]);
+        //gravar historico do envio do orçamento
+        if(isset($ret['exec'])){
+            $post_id = Qlib::get_id_by_token($token);
+            $ret['salv_hist'] = Qlib::update_postmeta($post_id,$this->campos_enviado,Qlib::lib_array_json($ret));
+        }
+
+        return $ret;
+    }
+    /**
+     * Metodo para gerar um termo em pdf de um determinado orçamento mediante um token
+     */
+    public function gerar_termo_orcamento($token,$d=false,$conteudo=false,$titulo=false){
+        if(!$d && $token){
+            $d = $this->get_orcamento($token);
+        }
+        if(!$conteudo){
+            $conteudo = Qlib::get_post_content(10);// 'Meu teste 06';
+        }
+        $id = isset($d['ID']) ? $d['ID'] : '';
+        $nome = isset($d['name']) ? $d['name'] : '';
+        $token = isset($d['token']) ? $d['token'] : '';
+        $email = isset($d['email']) ? $d['email'] : '';
+        $cpf = $d['cpf'] ? $d['cpf'] : '';
+        if(!$titulo){
+            $titulo = 'Termo de solicitação de orçamento '.$id;
+        }
         $oracamento = $this->orcamento_html($token,'table');
         $conteudo = str_replace('{nome}',$nome,$conteudo);
         $conteudo = str_replace('{email}',$email,$conteudo);
         $conteudo = str_replace('{cpf}',$cpf,$conteudo);
-        $conteudo = str_replace('{matricula}',$matricula,$conteudo);
-        $conteudo = str_replace('{servicos}',$servicos,$conteudo);
         $conteudo = str_replace('{orcamento}',$oracamento,$conteudo);
-        $ret = (new ZapsingController)->post([
-            "gerar_pdf" =>[
-                'titulo'=>$titulo,
-                'conteudo'=>$conteudo,
-                'arquivo'=>'termos/'.$token.'/nao_assinado.pdf',
-            ],
-            "body" => $body
-        ]);
+        // $conteudo = str_replace('{matricula}',$matricula,$conteudo);
+        // $conteudo = str_replace('{servicos}',$servicos,$conteudo);
+        $arquivo = 'termos/'.$token.'/nao_assinado.pdf';
+        $ret = (new PdfController)->salvarPdf(['titulo'=>$titulo,'conteudo'=>$conteudo],['arquivo'=>$arquivo]);
+        if($ret['exec']){
+            $ret['data'] = Qlib::dataLocal();
+            $post_id = Qlib::get_id_by_token($token);
+            $ret['salvar'] = Qlib::update_postmeta($post_id,'termo_gerado',Qlib::lib_array_json($ret));
+        }
+        return $ret;
+    }
+    public function sendoToZapsing(Request $request){
+        $token = $request->get('token');
+        $ret = ['exec'=>false,'mens'=>'Token inválido','color'=>'danger'];
+        if($token){
+            try {
+                EnvioZapsingJob::dispatch($token);
+                $ret = ['exec'=>true,'mens'=>'Enviado com sucesso','color'=>'success'];
+            } catch (\Throwable $e) {
+                $ret = ['exec'=>false,'mens'=>'Erro ao enviar','color'=>'danger','error'=>$e->getMessage()];
+            }
+        }
         return $ret;
     }
 }

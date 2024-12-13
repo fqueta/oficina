@@ -1,5 +1,5 @@
 @php
-    $orcamento_html = isset($dados['orcamento_html']) ? $dados['orcamento_html'] : [];
+    $orcamento_html = isset($dados['orcamento_html']) ? $dados['orcamento_html'] : '';
 @endphp
 <div class="row">
     <div class="col-md-12">

@@ -216,6 +216,7 @@ Route::prefix('ajax')->group(function(){
     Route::post('/get-rab',[OrcamentoController ::class,'get_rab'])->name('ajax.orcamento.rab');
     Route::get('/get-aeronave/{matricula}',[OrcamentoController ::class,'get_info_by_matricula'])->name('ajax.get_aeronave');
     Route::post('/enviar-agendamento',[OrcamentoController ::class,'enviar_orcamento'])->name('orcamento.enviar');
+    Route::post('/send-to-zapsing',[OrcamentoController ::class,'sendoToZapsing'])->name('send.zapsing');
 });
 Route::prefix('notification')->group(function(){
     Route::get('/index',[App\Http\Controllers\NotificationController::class,'index'])->name('notification.index');
