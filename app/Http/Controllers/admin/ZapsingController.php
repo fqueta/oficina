@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Qlib\Qlib;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\Log;
 class ZapsingController extends Controller
 {
 
@@ -78,5 +78,24 @@ class ZapsingController extends Controller
         }else{
             return $ret;
         }
+    }
+    public function webhook(){
+        $ret['exec'] = false;
+		@header("Content-Type: application/json");
+		$json = file_get_contents('php://input');
+        $d = [];
+        if($json){
+            $d = Qlib::lib_json_array($json);
+        }
+        Log::info('Webhook recebido:', $d);
+        // dd($d);
+        $ret['exec'] = false;
+        $token = isset($d['external_id']) ? $d['external_id'] : false;
+        $signed_file = isset($d['signed_file']) ? $d['signed_file'] : false;
+        if($token && $signed_file){
+            $ret['salvar'] = (new OrcamentoController)->baixar_arquivo($token, $signed_file);
+
+        }
+        return $ret;
     }
 }

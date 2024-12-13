@@ -552,7 +552,10 @@ class OrcamentoController extends Controller
         }
         return $ret;
     }
-    public function sendoToZapsing(Request $request){
+    /**
+     * Metodo para expor o metodo (new OrcamentoController)->send_to_zapsing() em uma routa de ajax
+     */
+    public function sendToZapsing(Request $request){
         $token = $request->get('token');
         $ret = ['exec'=>false,'mens'=>'Token inválido','color'=>'danger'];
         if($token){
@@ -564,5 +567,17 @@ class OrcamentoController extends Controller
             }
         }
         return $ret;
+    }
+    /**
+     * Metodo para baixar o arquivo assinado de um oraçmento baixar em um diretorio padrão de oraçamento
+     * @param string $token
+     */
+    public function baixar_arquivo($token,$url){
+        // $url = "https://zapsign.s3.amazonaws.com/sandbox/dev/2024/12/pdf/72d30d89-da1f-4e10-9025-3689b03ef3d4/7a773057-05d3-4843-be1d-0fe6bffdb730.pdf?AWSAccessKeyId=AKIASUFZJ7JCTI2ZRGWX&Signature=oRLj2PALoDs1JEkx%2FHm4TV1ZM%2BQ%3D&Expires=1734026017";
+        $caminhoSalvar = 'pdfs/termos/'.$token.'/assinado.pdf';
+        $ret = Qlib::download_file($url,$caminhoSalvar);
+        $ret['url'] = $url;
+        $ret['token'] = $token;
+        return response()->json($ret);
     }
 }

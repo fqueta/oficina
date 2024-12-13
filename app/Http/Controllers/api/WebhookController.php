@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\admin\AsaasController;
 use App\Http\Controllers\admin\ContratosController;
+use App\Http\Controllers\admin\ZapsingController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -18,6 +19,8 @@ class WebhookController extends Controller
             $ret = (new AsaasController)->webhook($request->all());
         }elseif($seg3=='contratos'){
             $ret = (new ContratosController)->webhook($request->all());
+        }elseif($seg3=='zapsing'){
+            $ret = (new ZapsingController)->webhook($request->all());
         }
         return $ret;
     }
