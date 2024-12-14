@@ -20,11 +20,13 @@ class OrcamentoController extends Controller
     public $campo_assinatura;
     public $campos_gerado;
     public $campos_enviado;
+    public $link_termo_assinado;
     public function __construct()
     {
         $this->campo_assinatura = 'assinatura_termo';
         $this->campos_gerado = 'termo_gerado';
         $this->campos_enviado = 'enviado_zapsing';
+        $this->link_termo_assinado = 'link_termo_assinado';
     }
     /**
      * Metodo para retornar as informações de propriedade de uma aeronave apartidar da consulta na RAB
@@ -578,6 +580,9 @@ class OrcamentoController extends Controller
         $ret = Qlib::download_file($url,$caminhoSalvar);
         $ret['url'] = $url;
         $ret['token'] = $token;
+        $post_id = Qlib::get_id_by_token($token);
+        if($ret['exec'])
+        $ret['salv'] = Qlib::update_postmeta($post_id,$this->link_termo_assinado,Qlib::lib_array_json(['link'=>$caminhoSalvar,'data'=>Qlib::dataLocal()]));
         return response()->json($ret);
     }
 }

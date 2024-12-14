@@ -1267,8 +1267,10 @@ class PostController extends Controller
                 $assinatura = Qlib::get_postmeta($id,$orc->campo_assinatura,true);
                 // $config['ttassinado'] = Qlib::get_postmeta($id,$orc->campo_ttassinado);
                 $gerado = Qlib::get_postmeta($id,$orc->campos_gerado,true);
+                $assinado = Qlib::get_postmeta($id,$orc->link_termo_assinado,true);
                 $config['assinatura'] = Qlib::lib_json_array($assinatura);
                 $config['gerado'] = Qlib::lib_json_array($gerado);
+                $config['assinado'] = Qlib::lib_json_array($assinado);
             }
             // if(!isset$dados['matricula'])
             //     $config['display_matricula'] = 'd-none';

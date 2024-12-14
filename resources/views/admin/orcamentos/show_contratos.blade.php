@@ -4,6 +4,8 @@
         $data = isset($config['assinatura']['data']) ? $config['assinatura']['data'] : '';
         $ip = isset($config['assinatura']['ip']) ? $config['assinatura']['ip'] : '';
         $arquivo_gerado = isset($config['gerado']['caminho']) ? $config['gerado']['caminho'] : '';
+        $assinado = isset($config['assinado']['link']) ? $config['assinado']['link'] : '';
+        $data_assinado = isset($config['assinado']['data']) ? $config['assinado']['data'] : '';
         $termo_enviado = false;
         $token = isset($value['token']) ? $value['token'] : '';
     @endphp
@@ -50,13 +52,25 @@
                                             @endif
                                         </td>
                                         <td>
-
                                         </td>
                                         <td>
-
+                                            @if ($assinado)
+                                            <div>
+                                                <a href="{{url('/storage/'.$assinado)}}" class="text-danger" target="_blank" rel="noopener noreferrer">
+                                                    <i class="fas fa-file-pdf fa-2x"></i>
+                                                </a>
+                                            </div>
+                                            <div>
+                                                <small>{{@$data_assinado}}</small>
+                                            </div>
+                                            @endif
                                         </td>
                                         <td>
-                                            @if (!$termo_enviado)
+                                            @if ($termo_enviado || $assinado)
+                                                <button class="btn">
+                                                        <i>Enviado</i> <span class="badge badge-primary"></span>
+                                                </button>
+                                            @else
                                                 <button class="btn btn-primary" onclick="envia_zapSing('{{$token}}')" title="Enviar para assinatura">
                                                     <i class="fas fa-envelope "></i>
                                                 </button>
