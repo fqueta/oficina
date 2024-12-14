@@ -12,6 +12,7 @@ use App\Qlib\Qlib;
 use FontLib\Table\Type\post as TypePost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use PhpParser\Node\Stmt\TryCatch;
 
 class OrcamentoController extends Controller
@@ -576,13 +577,19 @@ class OrcamentoController extends Controller
      */
     public function baixar_arquivo($token,$url){
         // $url = "https://zapsign.s3.amazonaws.com/sandbox/dev/2024/12/pdf/72d30d89-da1f-4e10-9025-3689b03ef3d4/7a773057-05d3-4843-be1d-0fe6bffdb730.pdf?AWSAccessKeyId=AKIASUFZJ7JCTI2ZRGWX&Signature=oRLj2PALoDs1JEkx%2FHm4TV1ZM%2BQ%3D&Expires=1734026017";
-        $caminhoSalvar = 'pdfs/termos/'.$token.'/assinado.pdf';
+        $num=null;
+        $caminhoSalvar = 'pdfs/termos/'.$token.'/assinado'.$num.'.pdf';
+        if(Storage::exists($caminhoSalvar)){
+            $num++;
+        }
+        $caminhoSalvar = 'pdfs/termos/'.$token.'/assinado'.$num.'.pdf';
         $ret = Qlib::download_file($url,$caminhoSalvar);
         $ret['url'] = $url;
         $ret['token'] = $token;
         $post_id = Qlib::get_id_by_token($token);
-        if($ret['exec'])
-        $ret['salv'] = Qlib::update_postmeta($post_id,$this->link_termo_assinado,Qlib::lib_array_json(['link'=>$caminhoSalvar,'data'=>Qlib::dataLocal()]));
+        if($ret['exec']){
+            $ret['salv'] = Qlib::update_postmeta($post_id,$this->link_termo_assinado,Qlib::lib_array_json(['link'=>$caminhoSalvar,'data'=>Qlib::dataLocal()]));
+        }
         return $ret;
     }
 }
