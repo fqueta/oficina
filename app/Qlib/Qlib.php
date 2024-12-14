@@ -1550,7 +1550,10 @@ class Qlib
         $ret = ['exec'=>false,'mens'=>false,'color'=>'danger','status'=>false];
         if($url && $caminhoSalvar){
             $response = Http::get($url);
-
+            $disk = 'public';
+            if (Storage::disk($disk)->exists($caminhoSalvar)) {
+                Storage::disk($disk)->delete($caminhoSalvar);
+            }
             if ($response->successful()) {
                 // Salvar no disco local
                 Storage::put($caminhoSalvar, $response->body());
