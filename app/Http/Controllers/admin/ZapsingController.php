@@ -92,11 +92,10 @@ class ZapsingController extends Controller
         $token = isset($d['external_id']) ? $d['external_id'] : false;
         $signed_file = isset($d['signed_file']) ? $d['signed_file'] : false;
         if($token && $signed_file){
-            $ret['salvar'] = (new OrcamentoController)->baixar_arquivo($token, $signed_file);
-            if($ret['salvar']['exec']){
-                $ret['exec'] = true;
-            }
-
+            $ret = (new OrcamentoController)->baixar_arquivo($token, $signed_file);
+            $post_id = Qlib::get_id_by_token($token);
+            //salvar hisorico do webhook
+            $ret['salvar_webhook'] = Qlib::update_postmeta($post_id,'salvar_webhook',$json);
         }
         return $ret;
     }

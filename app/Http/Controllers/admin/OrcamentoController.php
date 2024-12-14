@@ -583,6 +583,6 @@ class OrcamentoController extends Controller
         $post_id = Qlib::get_id_by_token($token);
         if($ret['exec'])
         $ret['salv'] = Qlib::update_postmeta($post_id,$this->link_termo_assinado,Qlib::lib_array_json(['link'=>$caminhoSalvar,'data'=>Qlib::dataLocal()]));
-        return response()->json($ret);
+        return $ret;
     }
 }
