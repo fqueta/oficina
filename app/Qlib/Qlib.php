@@ -1550,14 +1550,14 @@ class Qlib
         $ret = ['exec'=>false,'mens'=>false,'color'=>'danger','status'=>false];
         if($url && $caminhoSalvar){
             $response = Http::get($url);
-            $disk = 'public';
-            if (Storage::disk($disk)->exists($caminhoSalvar)) {
-                Storage::disk($disk)->delete($caminhoSalvar);
+            $delete = false;
+            if (Storage::exists($caminhoSalvar)) {
+                $delete = Storage::delete($caminhoSalvar);
             }
             if ($response->successful()) {
                 // Salvar no disco local
                 Storage::put($caminhoSalvar, $response->body());
-                $ret = ['exec'=>true,'mens'=>'Arquivo baixado e salvo com sucesso!','color'=>'success','status'=>$response->status()];
+                $ret = ['exec'=>true,'mens'=>'Arquivo baixado e salvo com sucesso!','delete'=>$delete,'color'=>'success','status'=>$response->status()];
             }else{
                 $ret = ['exec'=>false,'mens'=>'Erro ao baixar o arquivo remoto!','color'=>'danger','status'=>$response->status()];
             }
