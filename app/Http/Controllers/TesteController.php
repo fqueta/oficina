@@ -123,6 +123,8 @@ class TesteController extends Controller
             $external_id = Qlib::createSlug('11/12/2024 07');;
             $caminhoSalvar = 'pdf/termos_assinados/'.$external_id.'/arquivo.pdf';
             $ret = Qlib::download_file($url,$caminhoSalvar);
+        }elseif($opc==5){
+            return view('teste');
         }else{
             $subject = 'SOLICITAÇÃO DE AGENDAMENTO DE MANUTENÇÃO';
             $dc = User::find(1);

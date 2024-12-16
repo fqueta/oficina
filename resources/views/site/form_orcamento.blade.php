@@ -136,14 +136,14 @@
                 </div>
                 <div class="form-row row mx-0">
                     <label for="whatsapp">Whatsapp</label>
-                    <div class="col-3 pl-0 pr-0">
+                    <div class="col-md-3 col-4 pl-0 pr-0">
                         <select required class="form-control" name="config[ddi]">
                             @foreach ($arr_ddi as $k=>$v )
                                 <option value="{{$v['ddi']}}" @if($v['ddi']==$ddi_padrao) selected @endif>{!!$v['pais']!!} +{{$v['ddi']}} </option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-9 pl-0 pr-0">
+                    <div class="col-md-9 col-8 pl-0 pr-0">
                         <input required class="form-control" type="text" onblur="mask(this,clientes_mascaraTelefone);" onkeypress="mask(this,clientes_mascaraTelefone);" name="config[whatsapp]" placeholder="Seu Whatsapp">
                     </div>
                 </div>

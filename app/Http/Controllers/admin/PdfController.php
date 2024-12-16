@@ -39,6 +39,7 @@ class PdfController extends Controller
         ];
 
         // Gerar o PDF
+        // dd($dados);
         $pdf = Pdf::loadView('qlib.pdf.template_default', $dados);
 
         // Caminho onde o arquivo será salvo
