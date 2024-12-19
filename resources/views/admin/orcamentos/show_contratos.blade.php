@@ -77,7 +77,7 @@
                                             <div class="col-md-6">
                                                 <b>Visualizado: </b> {{@$v['times_viewed']}}
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-12 mb-2">
                                                 <b>Status: </b> <span class="badge {{$bdg}}">{{$status_sign}}</span>
                                             </div>
                                         </div>
