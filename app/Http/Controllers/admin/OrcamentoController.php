@@ -613,9 +613,9 @@ class OrcamentoController extends Controller
                 $stat = (new ZapsingController)->status_doc_remoto($tokenz);
                 $status = isset($stat['response']['status']) ? $stat['response']['status'] : '';
                 $ret['status'] = $stat;
+                $ret = $stat;
                 if($status=='signed'){
                     $salv_historico = Qlib::update_postmeta($id,$campo_meta,Qlib::lib_array_json($stat));
-                    $ret = $stat;
                     $ret['exec'] = true;
                 }
             }

@@ -1282,7 +1282,6 @@ class PostController extends Controller
                 $config['zapsing'] = $enviado_zapsing;
                 $config['status_sing'] = isset($enviado_zapsing['response']['status']) ? $enviado_zapsing['response']['status'] : 'pending';
                 $config['assinantes'] = isset($enviado_zapsing['response']['signers']) ? $enviado_zapsing['response']['signers'] : [];
-                // dd($enviado_zapsing);
 
             }
             // if(!isset$dados['matricula'])
