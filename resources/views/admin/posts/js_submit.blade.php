@@ -21,7 +21,11 @@
                             window.close(); // Close the current popup
                             return;
                     }
-                    var redirect = $('[btn-volter="true"]').attr('redirect');
+                    if(res.redirect){
+                        var redirect = res.redirect;
+                    }else{
+                        var redirect = $('[btn-volter="true"]').attr('redirect');
+                    }
                     if(redirect){
                         if(pop){
                             window.opener.popupCallback(function(){

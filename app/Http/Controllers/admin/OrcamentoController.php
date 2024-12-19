@@ -208,6 +208,7 @@ class OrcamentoController extends Controller
                 $post_id = Qlib::get_id_by_token($token);
                 $ret['termo'] = $this->salvar_aceito_termo(['id_cliente'=>$id_cliente,'post_id'=>$post_id,'meta'=>@$d['meta']]);
                 //salvar a consulta
+                $ret['idCad'] = $post_id;
                 $ret['salvar_consulta'] = Qlib::update_postmeta($post_id,'consulta_rab',$consulta);
                 if(is_array($email_admin)){
                     $from = 'suporte@aeroclubejf.com.br';

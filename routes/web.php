@@ -205,14 +205,14 @@ Route::resource('lances','\App\Http\Controllers\LanceController',['parameters' =
 //     Route::get('/login',[App\Http\Controllers\UserController::class,'user_login_jwt'])->name('user.login.jwt');
 // });
 Route::prefix('ajax')->group(function(){
-    Route::post('/excluir-reserva-lance',[App\Http\Controllers\LanceController::class,'excluir_reserva']);
-    Route::post('/ger-seguidores',[App\Http\Controllers\LeilaoController::class,'ger_seguidores']);
+    // Route::post('/excluir-reserva-lance',[App\Http\Controllers\LanceController::class,'excluir_reserva']);
+    // Route::post('/ger-seguidores',[App\Http\Controllers\LeilaoController::class,'ger_seguidores']);
     Route::post('/notification',[App\Http\Controllers\NotificationController::class,'receive_ajax']);
-    Route::post('/session-m',[App\Http\Controllers\admin\sessionController::class,'sessionManagerAction']);
-    Route::post('/reciclar-leilao/{leilao_id}',[LeilaoController::class,'reciclar'])->name('leiloes.reciclar');
-    Route::post('/tornar-vencedor',[LanceController::class,'tornar_vencedor'])->name('leiloes.tornar_vencedor');
+    // Route::post('/session-m',[App\Http\Controllers\admin\sessionController::class,'sessionManagerAction']);
+    // Route::post('/reciclar-leilao/{leilao_id}',[LeilaoController::class,'reciclar'])->name('leiloes.reciclar');
+    // Route::post('/tornar-vencedor',[LanceController::class,'tornar_vencedor'])->name('leiloes.tornar_vencedor');
     Route::post('/enviar-contato',[ContatoController::class,'enviar_contato'])->name('enviar.contato');
-    Route::post('/pre-cadastro-escola',[UserController::class,'pre_cadastro_escola'])->name('user.pre_cadastro_escola');
+    // Route::post('/pre-cadastro-escola',[UserController::class,'pre_cadastro_escola'])->name('user.pre_cadastro_escola');
     Route::post('/get-rab',[OrcamentoController ::class,'get_rab'])->name('ajax.orcamento.rab');
     Route::get('/get-aeronave/{matricula}',[OrcamentoController ::class,'get_info_by_matricula'])->name('ajax.get_aeronave');
     Route::post('/enviar-agendamento',[OrcamentoController ::class,'enviar_orcamento'])->name('orcamento.enviar');

@@ -13,7 +13,7 @@
         $assinantes = isset($config['assinantes']) ? $config['assinantes'] : false;
         $badge = 'badge-danger';
         if($status_sing=='signed'){
-            $status_sing = 'Assinado';
+            $status_sing = __('Assinatura completa');
             $badge = 'badge-success';
         }elseif($status_sing=='pending'){
             $status_sing = 'Pendente';
@@ -108,9 +108,6 @@
                                             {{__('Termo gerado')}}
                                         </th>
                                         <th>
-                                            {{__('Termo Enviado')}}
-                                        </th>
-                                        <th>
                                             {{__('Termo assinado')}}
                                         </th>
                                         <th>
@@ -126,8 +123,6 @@
                                                     <i class="fas fa-file-pdf fa-2x"></i>
                                                 </a>
                                             @endif
-                                        </td>
-                                        <td>
                                         </td>
                                         <td>
                                             @if ($assinado)

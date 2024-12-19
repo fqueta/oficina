@@ -1150,13 +1150,13 @@ class PostController extends Controller
             $id_cliente = isset($dados['guid']) ? $dados['guid'] : false;
             $obs = isset($dados['obs']) ? $dados['obs'] : false;
             $token = $dados['token'];
-            // dd($id_cliente);
             $ret = (new OrcamentoController)->salvarOrcamento($id_cliente,[
                 'token'=>$token,
                 'obs'=>$obs,
             ],$dados['config']);
-            if(isset($ret['exec'])){
-                $ret['redirect'] = url('/admin/orcamentos');
+            // dd($ret);
+            if(isset($ret['exec']) && isset($ret['idCad'])){
+                $ret['redirect'] = route('orcamentos.show',['id'=>$ret['idCad']]);
             }
             return $ret;
 
