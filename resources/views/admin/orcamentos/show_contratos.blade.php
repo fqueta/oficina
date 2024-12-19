@@ -49,22 +49,44 @@
         </div>
         {{-- @if (is_array($assinantes) && !$status_sing) --}}
         @if (is_array($assinantes))
-            <div class="card">
+            <div class="card card-secondary card-outline">
                 <div class="card-header">
-                    {{__('Solicitar assinaturas')}}
+                    {{__('Gerenciamento de assinaturas')}}
                 </div>
                 <div class="card-body">
                     <div class="row">
                         @foreach ($assinantes as $k=>$v )
+                        {{-- {{dd($v)}} --}}
+                            @php
+                                $status_sign = $v['status'];
+                                $bdg = 'badge-danger';
+                                if($status_sign=='signed'){
+                                    $bdg = 'badge-success';
+                                    $status_sign = 'Assinado';
+                                }else{
+                                    $status_sign = 'Aguardando Assinatura';
+                                }
+                            @endphp
                             <div class="card w-100">
                                 <div class="card-body">
                                     <div class="col-md-12">
-                                        <b>Nome: </b> {{@$v['name']}}
-                                        <b>Visualizado: </b> {{@$v['times_viewed']}}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <b>Nome: </b> {{@$v['name']}}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <b>Visualizado: </b> {{@$v['times_viewed']}}
+                                            </div>
+                                            <div class="col-12">
+                                                <b>Status: </b> <span class="badge {{$bdg}}">{{$status_sign}}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-md-12">
-                                        <label for="">Link de assinatura</label>
                                         <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">{{__('Link de assinatura:')}}</span>
+                                              </div>
                                             <input type="text" class="form-control" disabled value="{{$v['sign_url']}}" aria-label="Text input with dropdown button">
                                             <div class="input-group-append">
                                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ação</button>
@@ -88,7 +110,7 @@
                 </div> --}}
             </div>
         @endif
-        <div class="card card-primary card-outline mb-5">
+        <div class="card card-primary card-outline">
             <div class="card-header">
                 <h3 class="card-title">{{__('Arquivos')}}</h3>
                 <div class="card-tools">
@@ -105,10 +127,10 @@
                                 <thead>
                                     <tr>
                                         <th>
-                                            {{__('Termo gerado')}}
+                                            {{__('Ariquivo sem assinatura')}}
                                         </th>
                                         <th>
-                                            {{__('Termo assinado')}}
+                                            {{__('Arquivo assinado')}}
                                         </th>
                                         <th>
                                             {{__('Ação')}}
