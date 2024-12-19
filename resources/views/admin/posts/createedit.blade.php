@@ -32,7 +32,7 @@
     <div class="col-md-4">
         <div class="row">
             <div class="col-md-12">
-                @if ($config['sec']=='decretos')
+                @if ($config['sec']=='orcamentos')
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Arquivos</h3>

@@ -1389,6 +1389,11 @@ class PostController extends Controller
                 'sec'=>$this->sec,
                 'id'=>$id,
             ];
+            if($this->routa=='orcamentos'){
+                $config['arquivos'] = 'docx,PDF,pdf,jpg,xlsx,png,jpeg';
+                $config['tam_col1']='col-md-6';
+                $config['tam_col2']='col-md-6';
+            }
             $config['media'] = [
                 'files'=>'jpeg,jpg,png,pdf,PDF',
                 'select_files'=>'unique',
