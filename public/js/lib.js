@@ -2992,3 +2992,32 @@ function envia_zapSing(token){
         console.log(err);
     });
 }
+function copyTextToClipboard(text) {
+    var textArea = document.createElement("textarea");
+    textArea.style.position = 'fixed';
+    textArea.style.top = 0;
+    textArea.style.left = 0;
+    textArea.style.width = '2em';
+    textArea.style.height = '2em';
+    textArea.style.padding = 0;
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none';
+    textArea.style.background = 'transparent';
+    textArea.value = text;
+
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      var successful = document.execCommand('copy');
+      var msg = successful ? 'successful' : 'unsuccessful';
+       lib_formatMensagem('.mens','Copiado <b>'+text+'</b> com sucesso para Área de transferência','success',4000);
+
+      console.log('Copying text command was ' + msg);
+    } catch (err) {
+       lib_formatMensagem('.mens','Erro ao copiar para Área de transferência','danger',4000);
+      console.log('Oops, não pode ser copiado');
+      //window.prompt("Copie para Área de transferÃªncia: Ctrl+C e tecle Enter", text);
+    }
+    document.body.removeChild(textArea);
+  }

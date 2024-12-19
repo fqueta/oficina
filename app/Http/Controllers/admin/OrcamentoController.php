@@ -592,4 +592,33 @@ class OrcamentoController extends Controller
         }
         return $ret;
     }
+    /**Metodo para buscar e atualizar no sistema um status atualizado dos documentos no zapsing
+     * @param string $id do orçamento
+     */
+
+    public function get_status_zapsing($id) {
+        //conseguir o id do envio para o zapsintg
+        $campo_meta = 'enviado_zapsing';
+        $zapsing = Qlib::get_postmeta($id,$campo_meta,true);
+        //pegar o status atual das assinaturas
+        $ret['exec'] = false;
+        if($zapsing){
+            $arr = Qlib::lib_json_array($zapsing);
+            $ret = $arr;
+            $ret['exec'] = false;
+            $tokenz = isset($arr['response']['token']) ? $arr['response']['token'] : false;
+            $status_atual = isset($arr['response']['status']) ? $arr['response']['status'] : false;
+            if($tokenz && $status_atual!='signed'){
+                $stat = (new ZapsingController)->status_doc_remoto($tokenz);
+                $status = isset($stat['response']['status']) ? $stat['response']['status'] : '';
+                $ret['status'] = $stat;
+                if($status=='signed'){
+                    $salv_historico = Qlib::update_postmeta($id,$campo_meta,Qlib::lib_array_json($stat));
+                    $ret = $stat;
+                    $ret['exec'] = true;
+                }
+            }
+        }
+        return $ret;
+    }
 }

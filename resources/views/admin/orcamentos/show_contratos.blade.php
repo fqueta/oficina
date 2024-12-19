@@ -8,10 +8,86 @@
         $data_assinado = isset($config['assinado']['data']) ? $config['assinado']['data'] : '';
         $termo_enviado = false;
         $token = isset($value['token']) ? $value['token'] : '';
+        // $signers = isset($config['zapsing']['response']['signers']) ? $config['zapsing']['response']['signers'] : false;
+        $status_sing = isset($config['status_sing']) ? $config['status_sing'] : '';
+        $assinantes = isset($config['assinantes']) ? $config['assinantes'] : false;
+        $badge = 'badge-danger';
+        if($status_sing=='signed'){
+            $status_sing = 'Assinado';
+            $badge = 'badge-success';
+        }elseif($status_sing=='pending'){
+            $status_sing = 'Pendente';
+        }
     @endphp
     {{-- @if ($aceito_termo == 's') --}}
+        {{-- Exibir card de assinatura --}}
 
-
+        <div class="card">
+            <div class="card-header">
+                {{__('Status de assinatura no zapsing')}}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        Status:
+                        {{-- <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Status:</th>
+                                    <td>{{$status_sing}}</td>
+                                </tr>
+                            </tbody>
+                        </table> --}}
+                    </div>
+                    <div class="col-6 text-right">
+                        <span class="badge {{$badge}}">
+                            {!!$status_sing!!}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- @if (is_array($assinantes) && !$status_sing) --}}
+        @if (is_array($assinantes))
+            <div class="card">
+                <div class="card-header">
+                    {{__('Solicitar assinaturas')}}
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach ($assinantes as $k=>$v )
+                            <div class="card w-100">
+                                <div class="card-body">
+                                    <div class="col-md-12">
+                                        <b>Nome: </b> {{@$v['name']}}
+                                        <b>Visualizado: </b> {{@$v['times_viewed']}}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label for="">Link de assinatura</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" disabled value="{{$v['sign_url']}}" aria-label="Text input with dropdown button">
+                                            <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ação</button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="javascript:void(0)" onclick="copyTextToClipboard('{{$v['sign_url']}}')">Copiar</a>
+                                                <a class="dropdown-item" target="_blank" href="{{$v['sign_url']}}">Acessar</a>
+                                                {{-- <a class="dropdown-item" href="#">Something else here</a>
+                                                <div role="separator" class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="#">Separated link</a> --}}
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                {{-- <div class="card-footer text-muted">
+                    Footer
+                </div> --}}
+            </div>
+        @endif
         <div class="card card-primary card-outline mb-5">
             <div class="card-header">
                 <h3 class="card-title">{{__('Arquivos')}}</h3>
@@ -68,12 +144,15 @@
                                         <td>
                                             @if ($termo_enviado || $assinado)
                                                 <button class="btn">
-                                                        <i>Enviado</i> <span class="badge badge-primary"></span>
+                                                    <i>Enviado</i> <span class="badge badge-primary"></span>
                                                 </button>
                                             @else
-                                                <button class="btn btn-primary" onclick="envia_zapSing('{{$token}}')" title="Enviar para assinatura">
-                                                    <i class="fas fa-envelope "></i>
-                                                </button>
+                                                {{-- Verficar se ja foi enviado --}}
+                                                @if (!$assinantes)
+                                                    <button class="btn btn-primary" onclick="envia_zapSing('{{$token}}')" title="Enviar para assinatura">
+                                                        <i class="fas fa-envelope "></i>
+                                                    </button>
+                                                @endif
                                             @endif
                                         </td>
                                     </tr>

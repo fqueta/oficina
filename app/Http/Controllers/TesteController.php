@@ -125,6 +125,8 @@ class TesteController extends Controller
             $ret = Qlib::download_file($url,$caminhoSalvar);
         }elseif($opc==5){
             return view('teste');
+        }elseif($opc==6){
+            $ret = (new ZapsingController)->status_doc_remoto($token);
         }else{
             $subject = 'SOLICITAÇÃO DE AGENDAMENTO DE MANUTENÇÃO';
             $dc = User::find(1);

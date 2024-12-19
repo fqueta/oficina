@@ -1268,9 +1268,16 @@ class PostController extends Controller
                 // $config['ttassinado'] = Qlib::get_postmeta($id,$orc->campo_ttassinado);
                 $gerado = Qlib::get_postmeta($id,$orc->campos_gerado,true);
                 $assinado = Qlib::get_postmeta($id,$orc->link_termo_assinado,true);
+                // $enviado_zapsing = Qlib::get_postmeta($id,'enviado_zapsing',true);
+                $enviado_zapsing = $orc->get_status_zapsing($id);
                 $config['assinatura'] = Qlib::lib_json_array($assinatura);
                 $config['gerado'] = Qlib::lib_json_array($gerado);
                 $config['assinado'] = Qlib::lib_json_array($assinado);
+                $config['zapsing'] = $enviado_zapsing;
+                $config['status_sing'] = isset($enviado_zapsing['response']['status']) ? $enviado_zapsing['response']['status'] : 'pending';
+                $config['assinantes'] = isset($enviado_zapsing['response']['signers']) ? $enviado_zapsing['response']['signers'] : [];
+                // dd($enviado_zapsing);
+
             }
             // if(!isset$dados['matricula'])
             //     $config['display_matricula'] = 'd-none';

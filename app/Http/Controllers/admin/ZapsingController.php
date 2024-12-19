@@ -99,4 +99,42 @@ class ZapsingController extends Controller
         }
         return $ret;
     }
+    /**
+     * Verifica os dodos do documento remoto
+     * @param string $token do documento
+     */
+    public function status_doc_remoto($token){
+        $ret = ['exec'=>false];
+        if($token){
+
+            $endpoint = str_replace('{{doc_token}}',$token,'docs/{{doc_token}}');
+            $link = $this->url_id.'/'.$endpoint;
+            // dump($link);
+            try {
+            //code...
+                $response = Http::withHeaders([
+                    // 'Content-Type' => 'application/json',
+                    'Authorization' => $this->api_id,
+                ])
+                ->acceptJson()
+                ->get($link);
+                if($response){
+                    $ret['exec'] = true;
+                    $ret['mens'] = 'Documento enviado com sucesso';
+                    $ret['color'] = 'success';
+                }else{
+                    $ret['exec'] = false;
+                }
+                // $ret['body'] =  $body;
+                $ret['response_json'] = $response;
+                $ret['response_code'] = base64_encode($response);
+                $ret['response'] =  Qlib::lib_json_array($response);
+            } catch (\Throwable $e) {
+                $ret['error'] = $e->getMessage();
+            }
+        }
+        return $ret;
+
+    }
+
 }
