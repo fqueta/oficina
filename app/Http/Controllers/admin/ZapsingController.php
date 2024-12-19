@@ -57,7 +57,6 @@ class ZapsingController extends Controller
             try {
                 //code...
                 $urlEndpoint = $this->url_api.'/'.$endpoint;
-                dd($urlEndpoint);
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Authorization' => $this->api_id,
