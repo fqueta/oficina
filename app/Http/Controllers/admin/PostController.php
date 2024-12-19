@@ -1156,7 +1156,8 @@ class PostController extends Controller
             ],$dados['config']);
             // dd($ret);
             if(isset($ret['exec']) && isset($ret['idCad'])){
-                $ret['redirect'] = route('orcamentos.show',['id'=>$ret['idCad']]);
+                // $ret['redirect'] = route('orcamentos.show',['id'=>$ret['idCad']]);
+                $ret['redirect'] = route('orcamentos.index').'?idCad='.$ret['idCad'];
             }
             return $ret;
 
