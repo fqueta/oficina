@@ -11,11 +11,11 @@ class ZapsingController extends Controller
 {
 
     public $api_id;
-    public $url_id;
+    public $url_api;
     public function __construct()
     {
         $this->api_id = config('app.zapsing_id');
-        $this->url_id = config('app.zapsing_url_api');
+        $this->url_api = config('app.zapsing_url_api');
     }
     /**
      * Metodo para realizar as requisições post na api
@@ -56,10 +56,12 @@ class ZapsingController extends Controller
             // $body["disable_signers_get_original_file"] = isset($body["disable_signers_get_original_file"]) ? $body["disable_signers_get_original_file"] : false;
             try {
                 //code...
+                $urlEndpoint = $this->url_api.'/'.$endpoint;
+                dd($urlEndpoint);
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Authorization' => $this->api_id,
-                ])->post($this->url_id.'/'.$endpoint, $body);
+                ])->post($urlEndpoint, $body);
                 if($response){
                     $ret['exec'] = true;
                     $ret['mens'] = 'Documento enviado com sucesso';
@@ -108,7 +110,7 @@ class ZapsingController extends Controller
         if($token){
 
             $endpoint = str_replace('{{doc_token}}',$token,'docs/{{doc_token}}');
-            $link = $this->url_id.'/'.$endpoint;
+            $link = $this->url_api.'/'.$endpoint;
             // dump($link);
             try {
             //code...

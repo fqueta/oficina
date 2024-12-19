@@ -114,8 +114,8 @@ class TesteController extends Controller
             // $ret = $link;
             $ret = $tm.'<a href="'.$link.'" target="_blank">Acessar</a>';
         }elseif($opc==3){
-            // $ret = (new OrcamentoController)->send_to_zapSing($token);
-            $ret = (new OrcamentoController)->gerar_termo_orcamento($token);
+            $ret = (new OrcamentoController)->send_to_zapSing($token);
+            // $ret = (new OrcamentoController)->gerar_termo_orcamento($token);
 
         }elseif($opc==4){
             //download file
