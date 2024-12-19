@@ -1151,10 +1151,15 @@ class PostController extends Controller
             $obs = isset($dados['obs']) ? $dados['obs'] : false;
             $token = $dados['token'];
             // dd($id_cliente);
-            $salvar = (new OrcamentoController)->salvarOrcamento($id_cliente,[
+            $ret = (new OrcamentoController)->salvarOrcamento($id_cliente,[
                 'token'=>$token,
                 'obs'=>$obs,
             ],$dados['config']);
+            if(isset($ret['exec'])){
+                $ret['redirect'] = url('/admin/orcamentos');
+            }
+            return $ret;
+
         }else{
             $salvar = Post::create($dados);
         }
