@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Http\Controllers\admin\OrcamentoController;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 
 class EnvioZapsingJob implements ShouldQueue
 {
@@ -24,6 +25,7 @@ class EnvioZapsingJob implements ShouldQueue
      */
     public function handle(): void
     {
-        (new OrcamentoController)->send_to_zapSing($this->token);
+        $ret = (new OrcamentoController)->send_to_zapSing($this->token);
+        Log::info('EnvioZapSingJob:', $ret);
     }
 }
