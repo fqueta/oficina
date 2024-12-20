@@ -565,8 +565,9 @@ class OrcamentoController extends Controller
         $ret = ['exec'=>false,'mens'=>'Token inválido','color'=>'danger'];
         if($token){
             try {
-                EnvioZapsingJob::dispatch($token);
-                $ret = ['exec'=>true,'mens'=>'Enviado com sucesso','color'=>'success'];
+                // EnvioZapsingJob::dispatch($token);
+                $ret = $this->send_to_zapSing($token);
+                // $ret = ['exec'=>true,'mens'=>'Enviado com sucesso','color'=>'success'];
             } catch (\Throwable $e) {
                 $ret = ['exec'=>false,'mens'=>'Erro ao enviar','color'=>'danger','error'=>$e->getMessage()];
             }
