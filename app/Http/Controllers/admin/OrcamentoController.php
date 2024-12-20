@@ -520,7 +520,7 @@ class OrcamentoController extends Controller
             $post_id = Qlib::get_id_by_token($token);
             $ret['salv_hist'] = Qlib::update_postmeta($post_id,$this->campos_enviado,Qlib::lib_array_json($ret));
         }
-
+        Log::info('send_to_zapSing:', $ret);
         return $ret;
     }
     /**
@@ -572,7 +572,7 @@ class OrcamentoController extends Controller
                 $ret = ['exec'=>false,'mens'=>'Erro ao enviar','color'=>'danger','error'=>$e->getMessage()];
             }
         }
-        Log::info('SentToZapsing:', $ret);
+        Log::info('setToZapsing:', $ret);
         return $ret;
     }
     /**

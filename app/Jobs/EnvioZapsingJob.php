@@ -26,6 +26,5 @@ class EnvioZapsingJob implements ShouldQueue
     public function handle(): void
     {
         $ret = (new OrcamentoController)->send_to_zapSing($this->token);
-        Log::info('EnvioZapSingJob:', $ret);
     }
 }
