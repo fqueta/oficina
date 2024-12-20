@@ -25,6 +25,15 @@ class EnvioZapsingJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $ret = (new OrcamentoController)->send_to_zapSing($this->token);
+        $jobLogger = Log::channel('jobs');
+        $jobLogger->info('Iniciando o ExampleJob.');
+
+        try {
+            $ret = (new OrcamentoController)->send_to_zapSing($this->token);
+            // Lógica do Job
+            $jobLogger->info('EnvioZapsingJob está processando...',$ret);
+        } catch (\Exception $e) {
+            $jobLogger->error('Erro no EnvioZapsingJob: ' . $e->getMessage());
+        }
     }
 }

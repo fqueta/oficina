@@ -89,6 +89,7 @@ class ZapsingController extends Controller
                 $ret['body'] =  $body;
                 $ret['endp'] = $urlEndpoint;
             }
+            Log::info('postZapsingControllerPost', $ret);
             return $ret;
         }else{
             return $ret;
