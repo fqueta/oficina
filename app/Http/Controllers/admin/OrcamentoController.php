@@ -9,7 +9,7 @@ use App\Jobs\SendEmailJob;
 use App\Models\Post;
 use App\Models\User;
 use App\Qlib\Qlib;
-use FontLib\Table\Type\post as TypePost;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -572,6 +572,7 @@ class OrcamentoController extends Controller
                 $ret = ['exec'=>false,'mens'=>'Erro ao enviar','color'=>'danger','error'=>$e->getMessage()];
             }
         }
+        Log::info('SentToZapsing:', $ret);
         return $ret;
     }
     /**
