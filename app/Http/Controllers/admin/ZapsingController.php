@@ -14,8 +14,18 @@ class ZapsingController extends Controller
     public $url_api;
     public function __construct()
     {
-        $this->api_id = config('app.zapsing_id');
-        $this->url_api = config('app.zapsing_url_api');
+        $cred = $this->credenciais();
+        $this->api_id = isset($cred['id_api']) ? $cred['id_api'] : null;
+        $this->url_api = isset($cred['url_api']) ? $cred['url_api'] : null;
+        $this->api_id = str_replace('{id}',$this->api_id,'Bearer {id}');
+    }
+    private function credenciais(){
+        $d = Qlib::qoption('credencias_zapsing');
+        if($d){
+            return Qlib::lib_json_array($d);
+        }else{
+            return false;
+        }
     }
     /**
      * Metodo para realizar as requisições post na api

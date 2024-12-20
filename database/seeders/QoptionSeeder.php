@@ -57,7 +57,7 @@ class QoptionSeeder extends Seeder
             [
                 'nome'=>'Celular do whatsapp do Admin',
                 'url'=>'celular_zap',
-                'valor'=>'5532991648202',
+                'valor'=>'553288285752',
                 'obs'=>'',
             ],
             [
@@ -165,6 +165,15 @@ class QoptionSeeder extends Seeder
                     'orcamento_enviado'=>'Orçamento enviado',
                     'orcamento_aprovado'=>'Orçamento aprovado',
                     'orcamento_reprovado'=>'Orçamento reprovado',
+                ]),
+                'obs'=>'',
+            ],
+            [
+                'nome'=>'Credencias do zapsing',
+                'url'=>'credencias_zapsing',
+                'valor'=>Qlib::lib_array_json([
+                    'url_api'=>'',
+                    'id_api'=>'',
                 ]),
                 'obs'=>'',
             ],
