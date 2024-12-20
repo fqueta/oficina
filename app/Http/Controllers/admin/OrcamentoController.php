@@ -251,7 +251,10 @@ class OrcamentoController extends Controller
                 $ret['redirect'] = $link_redirect;
                 //Enviar para o zapsing
                 // EnvioZapsingJob::dispatch($token);
-                $ret = $this->send_to_zapSing($token);
+                $send_to_zapSing = $this->send_to_zapSing($token);
+                if(Qlib::is_backend()){
+                    $ret['send_to_zapSing'] = $send_to_zapSing;
+                }
             } catch (\Throwable $th) {
                 $ret['link_zap'] = $link_zap;
                 $ret['redirect'] = $link_redirect;
