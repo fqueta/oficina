@@ -14,8 +14,8 @@ class ZapsingController extends Controller
     public $url_api;
     public function __construct()
     {
-        $this->api_id = env('ZAPSING_ID');//config('app.zapsing_id');
-        $this->url_api = env('ZAPSING_URL_API');//config('app.zapsing_url_api');
+        $this->api_id = config('app.zapsing_id');
+        $this->url_api = config('app.zapsing_url_api');
     }
     /**
      * Metodo para realizar as requisições post na api
@@ -39,6 +39,7 @@ class ZapsingController extends Controller
                     $body["url_pdf"] = $url_pdf;
                 }
             }
+            // $body["url_pdf"] = 'https://oficina.aeroclubejf.com.br/storage/pdfs/termo_pdf';
             $body["folder_path"] = isset($body["folder_path"]) ? $body["folder_path"] : "/".config('app.id_app');
             $body["lang"] = isset($body["lang"]) ? $body["lang"] : "pt-br";
             $body["brand_logo"] = isset($body["brand_logo"]) ? $body["brand_logo"] : asset(config('adminlte.logo_img'));
@@ -69,11 +70,14 @@ class ZapsingController extends Controller
                     $ret['exec'] = false;
                 }
                 $ret['body'] =  $body;
+                $ret['endp'] = $urlEndpoint;
                 $ret['response_json'] = $response;
                 $ret['response_code'] = base64_encode($response);
                 $ret['response'] =  Qlib::lib_json_array($response);
             } catch (\Throwable $e) {
                 $ret['error'] = $e->getMessage();
+                $ret['body'] =  $body;
+                $ret['endp'] = $urlEndpoint;
             }
             return $ret;
         }else{

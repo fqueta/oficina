@@ -513,11 +513,6 @@ class OrcamentoController extends Controller
         $gerar_pdf = $this->gerar_termo_orcamento($token,$d,$conteudo,$titulo);
         $body['url_pdf'] = isset($gerar_pdf['caminho']) ? $gerar_pdf['caminho'] : '';
         $ret = (new ZapsingController)->post([
-            // "gerar_pdf" =>[
-            //     'titulo'=>$titulo,
-            //     'conteudo'=>$conteudo,
-            //     'arquivo'=>'termos/'.$token.'/nao_assinado.pdf',
-            // ],
             "body" => $body
         ]);
         //gravar historico do envio do orçamento
