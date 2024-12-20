@@ -14,8 +14,8 @@ class ZapsingController extends Controller
     public $url_api;
     public function __construct()
     {
-        $this->api_id = config('app.zapsing_id');
-        $this->url_api = config('app.zapsing_url_api');
+        $this->api_id = env('ZAPSING_ID');//config('app.zapsing_id');
+        $this->url_api = env('ZAPSING_URL_API');//config('app.zapsing_url_api');
     }
     /**
      * Metodo para realizar as requisições post na api

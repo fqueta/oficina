@@ -87,6 +87,7 @@ class OrcamentoController extends Controller
             $ret = Qlib::lib_json_array($json);
             $ret['mens'] = '';
             $ret['color'] = 'success';
+            // $request->merge(['ac'=>'cad']);
             $ret = $this->salverContato($request);
         }
         return response()->json($ret);
@@ -174,6 +175,11 @@ class OrcamentoController extends Controller
         $post_title = 'Solicitação de orçamento '.@$dc['name'];
         $post_status = 'aguardando'; //Status de orçamentos enviado,aguardando
         $token = isset($d['token']) ? $d['token'] : uniqid(); //Status de orçamentos enviado,aguardando
+        if(empty($consulta)){
+            //Validar a consulta rab
+            $ret['mens'] = __('Dados da consulta R.A.B inválidos.');
+            return $ret;
+        }
         $arr_salv = [
             'guid'=>$id_cliente,  //id do cliente
             'config'=>Qlib::lib_array_json($arr_config),
@@ -184,7 +190,7 @@ class OrcamentoController extends Controller
             'token'=> $token,
             'post_content'=> @$d['obs'],
         ];
-        //primeiro tenha atualizar um token que ja existe
+        //primeiro tenta atualizar um token que ja existe
         $salv = Post::where('token','=',$token)->update($arr_salv);
         if(!$salv){
             $salv = Post::create($arr_salv);
