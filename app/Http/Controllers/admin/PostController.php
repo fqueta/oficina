@@ -906,6 +906,16 @@ class PostController extends Controller
             $ret['token']['tam'] = '6';
         }
         $ret['obs'] = ['label'=>'Descrição','active'=>false,'type'=>'textarea','exibe_busca'=>'d-block','event'=>'','tam'=>'12','class_div'=>'','class'=>'editor-padrao summernote','value'=>@$data['post_content'],'show'=>false,'placeholder'=>__('Escreva seu conteúdo aqui..')];
+        if($ac=='cad'){
+            $ret['add_zap'] = [
+                'label'=>__('Enviar para assinaturas'),
+                'type'=>'html_script',
+                'active'=>false,
+                'script'=>'<label><input checked type="checkbox" name="config[enviar_assinatura]" value="s" /> Enviar para assinatura</label>',
+                // 'script_show'=>'admin.leilao.contratos.add_leilao',
+                'dados'=>$data,
+            ];
+        }
 
         return $ret;
     }
@@ -1150,6 +1160,7 @@ class PostController extends Controller
             $id_cliente = isset($dados['guid']) ? $dados['guid'] : false;
             $obs = isset($dados['obs']) ? $dados['obs'] : false;
             $token = $dados['token'];
+            // dd($dados['config']);
             $ret = (new OrcamentoController)->salvarOrcamento($id_cliente,[
                 'token'=>$token,
                 'obs'=>$obs,

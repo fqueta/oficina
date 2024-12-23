@@ -167,6 +167,7 @@ class OrcamentoController extends Controller
         $ret['mens'] = __('Erro ao enviar orçamento!');
         $ret['color'] = 'danger';
         $arr_config    = $config;
+        $enviar_assinatura = isset($config['enviar_assinatura']) ? $config['enviation_assinatura'] : 's';
         $consulta = isset($config['consulta']) ? $config['consulta'] : '';
         $arr_config['consulta'] = Qlib::decodeArray($config['consulta']);
         $ret['arr_config'] = $arr_config;
@@ -250,10 +251,12 @@ class OrcamentoController extends Controller
                 $ret['link_zap'] = $link_zap;
                 $ret['redirect'] = $link_redirect;
                 //Enviar para o zapsing
-                // EnvioZapsingJob::dispatch($token);
-                $send_to_zapSing = $this->send_to_zapSing($token);
-                if(Qlib::is_backend()){
-                    $ret['send_to_zapSing'] = $send_to_zapSing;
+                if($enviar_assinatura=='s'){
+                    // EnvioZapsingJob::dispatch($token);
+                    $send_to_zapSing = $this->send_to_zapSing($token);
+                    if(Qlib::is_backend()){
+                        $ret['send_to_zapSing'] = $send_to_zapSing;
+                    }
                 }
             } catch (\Throwable $th) {
                 $ret['link_zap'] = $link_zap;
