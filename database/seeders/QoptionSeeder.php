@@ -219,6 +219,12 @@ class QoptionSeeder extends Seeder
                 'valor'=>'O Aeroclube de Juiz de Fora é uma das escolas de aviação civil mais tradicionais do Brasil e, desde 1938, já formou mais de 12 mil pilotos.',
                 'obs'=>'',
             ],
+            [
+                'nome'=>'Título do termo',
+                'url'=>'titulo_termo',
+                'valor'=>'Termo para assinatura da aeronave {matricula} {id}',
+                'obs'=>'Titulo do Termo para ser enviado no zapsing',
+            ],
         ]);
     }
 }

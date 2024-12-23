@@ -453,6 +453,12 @@ class OrcamentoController extends Controller
         $d = Post::select('posts.*','users.email','users.name','users.cpf','users.config as config_user')->join('users','posts.guid','=','users.id')->where('posts.token','=',$token)->get();
         if($d->isNotEmpty()){
             $d = $d[0]->toArray();
+            if(is_string($d['config'])){
+                $d['config'] = Qlib::lib_json_array($d['config']);
+            }
+            if(is_string($d['config_user'])){
+                $d['config_user'] = Qlib::lib_json_array($d['config_user']);
+            }
         }else{
             return false;
         }
@@ -467,9 +473,12 @@ class OrcamentoController extends Controller
         $nome = isset($d['name']) ? $d['name'] : '';
         $token = isset($d['token']) ? $d['token'] : '';
         $email = isset($d['email']) ? $d['email'] : '';
+        $ret = ['exec' => false, 'mens'=>'Orçamento não encontrado','color'=>'danger', 'status'=>'403'];
+        if(!$d){
+            return $ret;
+        }
         $cpf = $d['cpf'] ? $d['cpf'] : '';
         $conteudo = Qlib::get_post_content(10);// 'Meu teste 06';
-        $ret = ['exec' => false, 'mens'=>'Orçamento não encontrado','color'=>'danger', 'status'=>'403'];
         if(!$id){
             return $ret;
         }
@@ -477,7 +486,11 @@ class OrcamentoController extends Controller
             $ret = ['exec' => false, 'mens'=>'Conteudo de termo inválido','color'=>'danger', 'status'=>'403'];
             return $ret;
         }
-        $titulo = 'Termo de solicitação de orçamento '.$id;
+        // $titulo = 'Termo de solicitação de orçamento '.$id;
+        $titulo = Qlib::qoption('titulo_termo') ? Qlib::qoption('titulo_termo') : 'Termo para assinatura da aeronave';
+        $matricula = isset($d['config']['matricula']) ? $d['config']['matricula'] : '';
+        $titulo = str_replace('{id}',$id,$titulo);
+        $titulo = str_replace('{matricula}',$matricula,$titulo);
         // $matricula  = isset($d['config']['matricula']) ? $d['config']['matricula'] : '';
         // $servicos  = isset($d['config']['servicos']) ? $d['config']['servicos'] : '';
         $id_assinante_oficina = Qlib::qoption('id_assinante_oficina');
