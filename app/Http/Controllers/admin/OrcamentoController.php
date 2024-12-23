@@ -167,7 +167,7 @@ class OrcamentoController extends Controller
         $ret['mens'] = __('Erro ao enviar orçamento!');
         $ret['color'] = 'danger';
         $arr_config    = $config;
-        $enviar_assinatura = isset($config['enviar_assinatura']) ? $config['enviation_assinatura'] : 's';
+        $enviar_assinatura = isset($config['enviar_assinatura']) ? $config['enviar_assinatura'] : 's';
         $consulta = isset($config['consulta']) ? $config['consulta'] : '';
         $arr_config['consulta'] = Qlib::decodeArray($config['consulta']);
         $ret['arr_config'] = $arr_config;
