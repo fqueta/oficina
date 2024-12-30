@@ -90,18 +90,20 @@ class PostController extends Controller
         $campos = $this->campos(false,$post_type);
         $tituloTabela = 'Lista de todos cadastros';
         $arr_titulo = false;
+        // dump($get);
         if(isset($get['filter'])){
                 $titulo_tab = false;
                 $i = 0;
-                if(isset($get['filter']['post_status'])){
-                    $get['filter']['post_status'] = 'publish';
-                }else{
-                    if(isset($get['origem'])=='site'){
-                        $get['filter']['post_status'] = 'publish';
-                    }else{
-                        $get['filter']['post_status'] = 'pending';
-                    }
-                }
+                $get['filter']['post_status'] = isset($get['filter']['post_status']) ? $get['filter']['post_status'] : 'publish';
+                // if(isset($get['filter']['post_status'])){
+                // }else{
+                    // if(isset($get['origem'])=='site'){
+                    //     $get['filter']['post_status'] = 'publish';
+                    // }else{
+                    //     $get['filter']['post_status'] = 'pending';
+                    // }
+                // }
+                // dump($get['filter']);
                 foreach ($get['filter'] as $key => $value) {
                     if(!empty($value)){
                         if($key=='id' || $key=='ID'){
@@ -122,7 +124,7 @@ class PostController extends Controller
                             }else{
                                 $post->where($key,'LIKE','%'. $value. '%');
                                 if(isset($campos[$key]['type']) && $campos[$key]['type']=='select'){
-                                    $value = $campos[$key]['arr_opc'][$value];
+                                    $value = isset($campos[$key]['arr_opc'][$value]) ? $campos[$key]['arr_opc'][$value] : null;
                                 }
                                 @$arr_titulo[@$campos[$key]['label']] = $value;
                                 $titulo_tab .= 'Todos com *'. @$campos[$key]['label'] .'% = '.$value.'& ';
@@ -136,6 +138,7 @@ class PostController extends Controller
                                 //$arr_titulo = explode('&',$tituloTabela);
                 }
                 $fm = $post;
+                // dd($post->get());
                 if($config['limit']=='todos'){
                     $post = $post->get();
                 }else{
@@ -749,7 +752,7 @@ class PostController extends Controller
     public function campos_orcamentos($post_id=false){
         $ac = 'cad';
         $data = false;
-        $user = Auth::user();
+        // $user = Auth::user();
         if($post_id){
             $data = Post::Find($post_id);
             if($data->count()){
@@ -764,31 +767,19 @@ class PostController extends Controller
         $ret = [
             'ID'=>['label'=>'Id','active'=>true,'type'=>'hidden','exibe_busca'=>'d-block','event'=>'','tam'=>'2'],
             'token'=>['label'=>'token','active'=>false,'type'=>'hidden','exibe_busca'=>'d-block','event'=>'','tam'=>'2'],
-            'guid'=>['label'=>'cliente','active'=>false,'type'=>'hidden','exibe_busca'=>'d-block','event'=>'','tam'=>'2'],
+            'guid'=>['label'=>'cliente','active'=>false,'type'=>'hidden','exibe_busca'=>'d-none','event'=>'','tam'=>'2'],
             'post_type'=>['label'=>'tipo de post','active'=>false,'type'=>'hidden','exibe_busca'=>'d-none','event'=>'','tam'=>'2','value'=>$this->post_type],
-            'post_date'=>['label'=>'Data','active'=>true,'type'=>'hidden_text','exibe_busca'=>'d-block','event'=>'','tam'=>'6'],
+            'post_date'=>['label'=>'Data','active'=>true,'type'=>'hidden_text','exibe_busca'=>'d-none','event'=>'','tam'=>'6'],
             'post_title'=>['label'=>'Titulo','active'=>true,'value'=>@$data['post_title'],'placeholder'=>'Ex.: Nome da página ','type'=>'text','exibe_busca'=>'d-block','event'=>'onkeyup=lib_typeSlug(this)','tam'=>'12'],
-            // 'post_excerpt'=>['label'=>'Descriação curta','active'=>false,'type'=>'textarea','exibe_busca'=>'d-block','event'=>$hidden_editor,'tam'=>'12','class_div'=>'','class'=>'','placeholder'=>__('Escreva seu conteúdo aqui..')],
-            // 'post_content'=>['label'=>'Conteudo','active'=>false,'type'=>'textarea','exibe_busca'=>'d-block','event'=>$hidden_editor,'tam'=>'12','class_div'=>'','class'=>'editor-padrao summernote','placeholder'=>__('Escreva seu conteúdo aqui..')],
-            // 'config[permission][]'=>[
-            //     'label'=>'Permissão de visualização (Visível para todos se não selecionar)',
-            //     'active'=>true,
-            //     'type'=>'select_multiple',
-            //     'arr_opc'=>Qlib::sql_array("SELECT id,name FROM permissions WHERE active='s' AND id >='".$user->id_permission."'",'name','id'),'exibe_busca'=>'d-block',
-            //     'event'=>'',
-            //     'tam'=>'12',
-            //     'cp_busca'=>'config][permission'
-            // ],
-            // 'post_status'=>['label'=>'Status','active'=>true,'type'=>'chave_checkbox','value'=>'publish','valor_padrao'=>'publish','exibe_busca'=>'d-block','event'=>'','tam'=>'3','arr_opc'=>['aguardando'=>'Aguardando','resolvido'=>'Resolvido']],
             'post_status'=>[
                 'label'=>'Status*',
                 'active'=>true,
+                'busca'=>true,
                 'type'=>'select',
                 'arr_opc'=>Qlib::get_tipos('status_orcamentos'),
                 'exibe_busca'=>'d-block',
                 'event'=>'required',
                 'tam'=>'12',
-                'exibe_busca'=>true,
                 'option_select'=>true,
                 'class'=>'',
                 // 'value'=>@$_GET['config']['tipo_pagina'],
@@ -816,7 +807,8 @@ class PostController extends Controller
             'script_show'=>'admin.orcamentos.show_orcamentos',
             'dados'=>$data,
         ];
-        if($ac=='cad'){
+        $route = request()->route()->getName();
+        if($ac=='cad' && $route != 'orcamentos.index'){
             $ret['post_title']['type'] = 'hidden';
             $ret['post_date']['type'] = 'hidden';
             // $ret['post_date']['value'] = Qlib::dtBanco(Qlib::dataLocal());
@@ -825,15 +817,6 @@ class PostController extends Controller
             $rf = 'fornecedores';
             // $userC = new UserController(['route'=>$rf]);
         }
-        // $consulta = isset($data['config']) ? $data['config'] : [];
-        // if(is_string($consulta)){
-        //     if(json_validate($consulta)){
-        //         $consulta = Qlib::lib_json_array($consulta);
-        //     }
-        // }
-        // if(is_array($consulta)){
-        //     $consulta = Qlib::encodeArray($consulta);
-        // }
         $consulta = Qlib::get_postmeta($post_id,'consulta_rab',true);
         $ret['config[consulta]']         =   ['label'=>'Consulta:','active'=>false,'placeholder'=>'','type'=>'hidden','exibe_busca'=>'d-block','event'=>'required ','tam'=>'12','cp_busca'=>'config][consulta','value'=>$consulta];
         if($ac=='alt'){
@@ -1560,10 +1543,7 @@ class PostController extends Controller
                         $cfg = Qlib::lib_json_array($cfg);
                     }
                 }
-                $atualizar = (new OrcamentoController)->salvarOrcamento($id_cliente,[
-                    'token'=>$token,
-                    'obs'=>$obs,
-                ],$cfg);
+                $atualizar = (new OrcamentoController)->salvarOrcamento($id_cliente,$dados,$cfg);
                 if($atualizar['exec']){
                     unset($atualizar['redirect']);
                     return $atualizar;

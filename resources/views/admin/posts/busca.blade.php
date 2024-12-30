@@ -9,11 +9,12 @@
             </div>
         </div>
         <div class="card-body">
+            aqui mesmo
             <!--<form action="" method="GET">-->
                 <div class="row">
                     @if (isset($campos_tabela))
                         @foreach ($campos_tabela as $kbu=>$vbu)
-                            @if ($vbu['active'])
+                            @if (isset($vbu['busca']) && $vbu['busca'])
                                 {{App\Qlib\Qlib::qForm([
                                     'type'=>isset($vbu['type'])?$vbu['type']:'text',
                                     'campo'=>'filter['.$kbu.']',
@@ -29,27 +30,6 @@
                             @endif
 
                         @endforeach
-                    @else
-                    {{App\Qlib\Qlib::qForm([
-                        'type'=>'text',
-                        'campo'=>'filter[loteamento]',
-                        'placeholder'=>'Loteamento',
-                        'label'=>'Loteamento',
-                        'ac'=>'alt',
-                        'value'=>@$_GET['filter']['loteamento'],
-                        'tam'=>'4',
-                        'event'=>'',
-                    ])}}
-                    {{App\Qlib\Qlib::qForm([
-                        'type'=>'text',
-                        'campo'=>'filter[area_alvo]',
-                        'placeholder'=>'Informe Área',
-                        'label'=>'Área Alvo',
-                        'ac'=>'alt',
-                        'value'=>@$_GET['filter']['area_alvo'],
-                        'tam'=>'2',
-                        'event'=>'',
-                        ])}}
                     @endif
                     <div class="col-md-12">
                         <div class="btn-group">

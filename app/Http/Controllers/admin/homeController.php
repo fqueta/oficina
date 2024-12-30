@@ -32,10 +32,10 @@ class homeController extends Controller
         $uc = new UserController;
         $fnp = $lc->finalizados_nao_pagos();
         $card_top = [
-            'finalizados' => ['label' => __('Orcametos aguardando'),'icon' => 'fas fa-gavel','link' => url('/admin#list-finalizados'),'value' => $orc->total_orcamentos('aguardando'),'color' => 'bg-info','title'=>''],
-            'andamento' => ['label' => __('Orcametos em andamento'),'icon' => 'fas fa-gavel','link' => url('/admin/orcamentos?situacao=andamento&contrato=s'),'value' => $orc->total_orcamentos('andamento'),'color' => 'bg-success','title'=>''],
+            'finalizados' => ['label' => __('Orçamentos aguardando'),'icon' => 'fas fa-gavel','link' => url('/admin/orcamentos?limit=100&order=desc&filter[ID]=&filter[post_status]=aguardando'),'value' => $orc->total_orcamentos('aguardando'),'color' => 'bg-info','title'=>''],
+            'andamento' => ['label' => __('Orçamentos em aprovado'),'icon' => 'fas fa-gavel','link' => url('/admin/orcamentos?limit=100&order=desc&filter[ID]=&filter[post_status]=orcamento_aprovado'),'value' => $orc->total_orcamentos('orcamento_aprovado'),'color' => 'bg-success','title'=>''],
             'cadastrados' => ['label' => __('Usuários cadastrados'),'icon' => 'fas fa-users','link' => route('users.index'),'value' => $uc->total(),'color' => 'bg-warning','title'=>''],
-            'total' => ['label' => __('Orcametos não pagos'),'icon' => 'fa fa-cash','event'=>'','link' => url('/admin#list-finalizados'),'value' => Qlib::valor_moeda(@$fnp['total_apagar'],'R$'),'color' => 'bg-danger','title'=>'Contratos de leilões arrematados e não pagos'],
+            'total' => ['label' => __('Orçamentos não pagos'),'icon' => 'fa fa-cash','event'=>'','link' => url('/admin#list-finalizados'),'value' => Qlib::valor_moeda(@$fnp['total_apagar'],'R$'),'color' => 'bg-danger','title'=>'Contratos de leilões arrematados e não pagos'],
         ];
         // dd($card_top);
         $config = [

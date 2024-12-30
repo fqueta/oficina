@@ -26,19 +26,24 @@
                                     if($vbu['type']=='chave_checkbox'){
                                         // $_GET['filter'][$kbu] = isset($_GET['filter'][$kbu]) ? $_GET['filter'][$kbu] : @$vbu['valor_padrao'];
                                     }
-                                    if($kbu!='obs')
-                                        $vbu['tam'] = 3;
+                                    // if($kbu!='obs')
+                                    //     $vbu['tam'] = 3;
                                     $cp_busca = isset($vbu['cp_busca'])?$vbu['cp_busca']:$kbu;
+                                    $type = isset($vbu['type'])?$vbu['type']:'text';
+                                    if($type == 'hidden'){
+                                        $type = 'text';
+                                    }
                                 @endphp
                                 {{App\Qlib\Qlib::qForm([
-                                    'type'=>isset($vbu['type'])?$vbu['type']:'text',
+                                    'type'=>$type,
                                     'campo'=>'filter['.$cp_busca.']',
                                     'placeholder'=>isset($vbu['placeholder'])?$vbu['placeholder']:'',
                                     'label'=>$vbu['label'],
                                     'ac'=>'alt',
                                     'value'=>@$_GET['filter'][$kbu],
                                     'valor_padrao'=>@$vbu['valor_padrao'],
-                                    'tam'=>isset($vbu['tam'])?$vbu['tam']:'3',
+                                    // 'tam'=>isset($vbu['tam'])?$vbu['tam']:'3',
+                                    'tam'=>'6',
                                     'class_div'=>$vbu['exibe_busca'],
                                     'event'=>isset($vbu['event_busca'])?$vbu['event_busca']:'',
                                     'arr_opc'=>isset($vbu['arr_opc'])?$vbu['arr_opc']:'',

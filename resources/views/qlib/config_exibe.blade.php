@@ -49,7 +49,7 @@
                     </a>
                 </div>
                 @endcan
-                <div class="collapse" id="busca-id">
+                <div class="collapse w-100" id="busca-id">
                     @include('qlib.busca')
                 </div>
             </div>

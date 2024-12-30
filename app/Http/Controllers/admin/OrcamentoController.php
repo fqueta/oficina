@@ -174,8 +174,8 @@ class OrcamentoController extends Controller
         $post_type = 'orcamentos';
         $dc = User::find($id_cliente);
         $post_title = 'Solicitação de orçamento '.@$dc['name'];
-        $post_status = 'aguardando'; //Status de orçamentos enviado,aguardando
         $token = isset($d['token']) ? $d['token'] : uniqid(); //Status de orçamentos enviado,aguardando
+        $post_status = isset($d['post_status']) ? $d['post_status'] : 'aguardando'; //Status de orçamentos enviado,aguardando
         if(empty($consulta)){
             //Validar a consulta rab
             $ret['mens'] = __('Dados da consulta R.A.B inválidos.');
@@ -440,9 +440,16 @@ class OrcamentoController extends Controller
      * Metodo para contar o numero total de orçamentos
      */
     public function total_orcamentos($status=''){
-        $total = Post::where('post_type','=','orcamentos')
-        ->where('post_status','=',$status)
-        ->count();
+        if($status=='andamento'){
+            $total = Post::where('post_type','=','orcamentos')
+            ->where('post_status','!=','trash')
+            ->where('post_status','!=','aguardando')
+            ->count();
+        }else{
+            $total = Post::where('post_type','=','orcamentos')
+            ->where('post_status','=',$status)
+            ->count();
+        }
         return $total;
     }
     /**
