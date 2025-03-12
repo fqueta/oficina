@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\EnviarEmail;
 use App\Jobs\EnvioZapsingJob;
+use App\Jobs\RdstationJob;
 use App\Jobs\SendEmailJob;
 use App\Models\Post;
 use App\Models\User;
@@ -203,7 +204,6 @@ class OrcamentoController extends Controller
                 $link_redirect .= '?zlink='.base64_encode($link_zap);
             }
             try {
-                //code...
                 $email_admin = explode(',',Qlib::qoption('email_gerente'));
                 $ret['exec'] = true;
                 //enviar 2 emails para admin
@@ -252,11 +252,12 @@ class OrcamentoController extends Controller
                 $ret['redirect'] = $link_redirect;
                 //Enviar para o zapsing
                 if($enviar_assinatura=='s'){
-                    // EnvioZapsingJob::dispatch($token);
-                    $send_to_zapSing = $this->send_to_zapSing($token);
-                    if(Qlib::is_backend()){
-                        $ret['send_to_zapSing'] = $send_to_zapSing;
-                    }
+                    $ret['EnvioZapsingJob'] = EnvioZapsingJob::dispatch($token);
+                    // $send_to_zapSing = $this->send_to_zapSing($token);
+                    $ret['RdstationJob'] = RdstationJob::dispatch($token);
+                    // if(Qlib::is_backend()){
+                    //     $ret['send_to_zapSing'] = $send_to_zapSing;
+                    // }
                 }
             } catch (\Throwable $th) {
                 $ret['link_zap'] = $link_zap;

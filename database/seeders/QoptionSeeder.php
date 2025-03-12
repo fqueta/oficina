@@ -225,6 +225,12 @@ class QoptionSeeder extends Seeder
                 'valor'=>'Termo para assinatura da aeronave {matricula} {id}',
                 'obs'=>'Titulo do Termo para ser enviado no zapsing',
             ],
+            [
+                'nome'=>'Id integração RDstation',
+                'url'=>'token_usuario_rd',
+                'valor'=>'',
+                'obs'=>'integração Rdstation',
+            ],
         ]);
     }
 }

@@ -6,11 +6,12 @@ use App\Http\Controllers\admin\AsaasController;
 use App\Http\Controllers\admin\CobrancaController;
 use App\Http\Controllers\admin\ContratosController;
 use App\Http\Controllers\admin\OrcamentoController;
+use App\Http\Controllers\admin\RdstationController;
 use App\Http\Controllers\admin\PostController;
-use App\Http\Controllers\admin\QuickCadController;
 use App\Http\Controllers\admin\ZapsingController;
 use App\Http\Controllers\BacklistController;
 use App\Jobs\NotificWinnerJob;
+use App\Jobs\RdstationJob;
 use App\Jobs\SendEmailJob;
 use App\Mail\EnviaMail;
 use App\Mail\leilao\lancesNotific;
@@ -127,6 +128,9 @@ class TesteController extends Controller
             return view('teste');
         }elseif($opc==6){
             $ret = (new ZapsingController)->status_doc_remoto($token);
+        }elseif($opc==7){
+            // $ret = (new RdstationController)->add_rd_negociacao($token);
+            $ret = RdstationJob::dispatch($token);
         }else{
             $subject = 'SOLICITAÇÃO DE AGENDAMENTO DE MANUTENÇÃO';
             $dc = User::find(1);
