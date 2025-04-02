@@ -55,6 +55,12 @@ class QoptionSeeder extends Seeder
                 'obs'=>'',
             ],
             [
+                'nome'=>'Id do assinante como diretor',
+                'url'=>'id_assinante_diretor',
+                'valor'=>'2',
+                'obs'=>'',
+            ],
+            [
                 'nome'=>'Celular do whatsapp do Admin',
                 'url'=>'celular_zap',
                 'valor'=>'553288285752',

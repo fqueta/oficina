@@ -129,7 +129,7 @@
         <form class="form-acjf" action="/ajax/get-rab" id="form-agendamento" action="">
             <h3 class="form-subtitle">Preencha com suas informações de contato:</h3>
             <fieldset class="personal-info">
-                <h5 class="border-bottom">Informações pessoais:</h5>
+                <h6>Informações pessoais:</h6>
                 <div class="form-row">
                     <label for="nome">Nome</label>
                     <input required type="nome" class="form-control" name="name" placeholder="Seu Nome">
@@ -144,58 +144,12 @@
                         </select>
                     </div>
                     <div class="col-md-9 col-8 pl-0 pr-0">
-                        <input required class="form-control" type="text" onblur="mask(this,clientes_mascaraTelefone);" onkeypress="mask(this,clientes_mascaraTelefone);" name="config[telefonezap]" placeholder="Seu Whatsapp">
+                        <input required class="form-control" type="text" onblur="mask(this,clientes_mascaraTelefone);" onkeypress="mask(this,clientes_mascaraTelefone);" name="config[whatsapp]" placeholder="Seu Whatsapp">
                     </div>
                 </div>
                 <div class="form-row">
                     <label for="email">E-mail</label>
-                    <input required type="email" name="email" class="form-control" placeholder="Seu melhor email" />
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="cpf">CPF</label>
-                        <input required type="tel" name="cpf"  mask-cpf="" class="form-control" placeholder="Seu CPF" />
-                    </div>
-                    <div class="col-md-6">
-                        <label for="cpf">RG</label>
-                        <input required type="tel" name="config[rg]" class="form-control" placeholder="Sue número de identidade" />
-                    </div>
-                </div>
-                <div class="form-row mt-3 mb-3">
-                    <h5 class="border-bottom">Endereço:</h5>
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-3 " div-id="config[cep]">
-                        <label for="config[cep]">CEP</label>
-                        <input type="text" class="form-control  " id="inp-config[cep]" name="config[cep]" aria-describedby="config[cep]" placeholder="" value="" mask-cep="" onchange="buscaCep1_0(this.value)">
-                    </div>
-                    <div class="form-group col-md-7 " div-id="config[endereco]">
-                        <label for="config[endereco]">Endereço</label>
-                        <input type="text" class="form-control  " id="inp-config[endereco]" name="config[endereco]" aria-describedby="config[endereco]" placeholder="" value="" endereco="cep">
-                    </div>
-                    <div class="form-group col-md-2 " div-id="config[numero]">
-                        <label for="config[numero]">Numero</label>
-                        <input type="text" class="form-control  " id="inp-config[numero]" name="config[numero]" aria-describedby="config[numero]" placeholder="" value="" numero="cep">
-                    </div>
-                    <div class="form-group col-md-3 " div-id="config[complemento]">
-                        <label for="config[complemento]">Complemento</label>
-                        <input type="text" class="form-control  " id="inp-config[complemento]" name="config[complemento]" aria-describedby="config[complemento]" placeholder="" value="">
-                    </div>
-                    <div class="form-group col-md-3 " div-id="config[bairro]">
-                        <label for="config[bairro]">Bairro</label>
-                        <input type="text" class="form-control  " id="inp-config[bairro]" name="config[bairro]" aria-describedby="config[bairro]" placeholder="" value="" bairro="cep">
-                    </div>
-                    <div class="form-group col-md-4 " div-id="config[cidade]">
-                        <label for="config[cidade]">Cidade</label>
-                        <input type="text" class="form-control  " id="inp-config[cidade]" name="config[cidade]" aria-describedby="config[cidade]" placeholder="" value="" cidade="cep">
-                    </div>
-                    <div class="form-group col-md-2 " div-id="config[uf]">
-                        <label for="config[uf]">UF</label>
-                        <input type="text" class="form-control  " id="inp-config[uf]" name="config[uf]" aria-describedby="config[uf]" placeholder="" value="">
-                    </div>
-                </div>
-                <div class="form-row mt-3 mb-3">
-                    <h5 class="border-bottom">Informações da Aeronave:</h5>
+                    <input required type="email" name="email" class="form-control" placeholder="Seu melhor email">
                 </div>
                 <div class="form-row etp-1">
                     <label for="email">Matrícula da Aeronave</label>

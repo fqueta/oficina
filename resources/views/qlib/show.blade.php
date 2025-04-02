@@ -83,6 +83,7 @@
                             'class'=>@$v['class'],
                             'class_div'=>@$v['class_div'],
                             'rows'=>@$v['rows'],
+                            'show'=>isset($v['show']) ? $v['show'] : true,
                             'cols'=>@$v['cols'],
                             'data_selector'=>@$v['data_selector'],
                             'script'=>@$v['script_show'],

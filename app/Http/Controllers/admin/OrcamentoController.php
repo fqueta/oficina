@@ -97,6 +97,7 @@ class OrcamentoController extends Controller
     public function salverContato(Request $request){
         $ret['exec'] = false;
         $email = $request->get('email');
+        $cpf = $request->get('cpf');
         $d = $request->all();
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $ret['mens'] = "O endereço de Email '$email' é inválido.\n";
@@ -110,6 +111,7 @@ class OrcamentoController extends Controller
         try {
             $arr_sav = [
                 'email'=>$email,
+                'cpf'=>$cpf,
                 'config'=>$config,
                 'name'=>$name,
                 'id_permission'=>$id_cliente_front,
@@ -126,6 +128,7 @@ class OrcamentoController extends Controller
                 if($id_cliente) {
                     $ret['up'] = User::where('id', $id_cliente)->update([
                         'name' => $name,
+                        'cpf'=>$cpf,
                         'config' => $config,
                         // 'id_permission'=>$id_cliente_front,
                     ]);
@@ -501,8 +504,15 @@ class OrcamentoController extends Controller
         $titulo = str_replace('{matricula}',$matricula,$titulo);
         // $matricula  = isset($d['config']['matricula']) ? $d['config']['matricula'] : '';
         // $servicos  = isset($d['config']['servicos']) ? $d['config']['servicos'] : '';
+        $id_assinante_diretor = Qlib::qoption('id_assinante_diretor');
         $id_assinante_oficina = Qlib::qoption('id_assinante_oficina');
+        $dad = User::find($id_assinante_diretor);
         $da = User::find($id_assinante_oficina);
+
+        $nome_diretor = isset($dad['name']) ? $dad['name'] : '';
+        $email_diretor = isset($dad['email']) ? $dad['email'] : '';
+        $cpf_diretor = isset($dad['cpf']) ? $dad['cpf'] : '';
+
         $nome_oficina = isset($da['name']) ? $da['name'] : '';
         $email_oficina = isset($da['email']) ? $da['email'] : '';
         $cpf_oficina = isset($da['cpf']) ? $da['cpf'] : '';
@@ -521,13 +531,22 @@ class OrcamentoController extends Controller
                     "order_group" => 1,
                 ],
                 [
+                    "name" => $nome_diretor, //assinatura do diretor
+                    "email" => $email_diretor,
+                    "cpf" => $cpf_diretor,
+                    "send_automatic_email" => true,
+                    "send_automatic_whatsapp" => false,
+                    "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
+                    "order_group" => 2,
+                ],
+                [
                     "name" => $nome_oficina, //assinatura da oficina
                     "email" => $email_oficina,
                     "cpf" => $cpf_oficina,
                     "send_automatic_email" => true,
                     "send_automatic_whatsapp" => false,
                     "auth_mode" => "CPF", //tokenEmail,assinaturaTela-tokenEmail,tokenSms,assinaturaTela-tokenSms,tokenWhatsapp,assinaturaTela-tokenWhatsapp,CPF,assinaturaTela-cpf,assinaturaTela
-                    "order_group" => 2,
+                    "order_group" => 3,
                 ],
             ],
         ];
@@ -569,13 +588,29 @@ class OrcamentoController extends Controller
         if(!$titulo){
             $titulo = 'Termo de solicitação de orçamento '.$id;
         }
+
         $oracamento = $this->orcamento_html($token,'table');
         $conteudo = str_replace('{nome}',$nome,$conteudo);
         $conteudo = str_replace('{email}',$email,$conteudo);
         $conteudo = str_replace('{cpf}',$cpf,$conteudo);
+        $conteudo = str_replace('{cpf_cliente}',$cpf,$conteudo);
         $conteudo = str_replace('{orcamento}',$oracamento,$conteudo);
-        // $conteudo = str_replace('{matricula}',$matricula,$conteudo);
         // $conteudo = str_replace('{servicos}',$servicos,$conteudo);
+        if(isset($d['config']) && is_array($d['config'])){
+            foreach ($d['config'] as $kc => $vc) {
+                if(!is_array($vc) && !empty($vc)){
+                    if($kc=='rg'){
+                        $kc = 'identidade';
+                    }elseif($kc=='endereco'){
+                        // $conteudo = str_replace('{telefone}',$vc,$conteudo);
+                        $vc = @$d['config']['endereco'].', '.@$d['config']['numero'].' '.@$d['config']['complemento'].' '.@$d['config']['bairro'].' '.@$d['config']['cidade'].' '.@$d['config']['uf'];
+                    }elseif($kc=='telefonezap' || $kc=='whatsapp'){
+                        $conteudo = str_replace('{telefone}',$vc,$conteudo);
+                    }
+                    $conteudo = str_replace('{'.$kc.'}',$vc,$conteudo);
+                }
+            }
+        }
         $arquivo = 'termos/'.$token.'/nao_assinado.pdf';
         $ret = (new PdfController)->salvarPdf(['titulo'=>$titulo,'conteudo'=>$conteudo],['arquivo'=>$arquivo]);
         if($ret['exec']){

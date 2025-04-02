@@ -1,4 +1,7 @@
-@if (isset($config['type']))
+@php
+    $siga = isset($config['show']) ? $config['show'] :  true;
+@endphp
+@if (isset($config['type']) && $siga)
     @if ($config['type']=='select')
         <div class="col-{{$config['tam']}}"  div-id="{{$config['campo']}}" >
             @if ($config['label'])
@@ -11,7 +14,6 @@
                     {{@$config['arr_opc'][$config['value']]}}
                 @endif
             @endif
-
         </div>
     @elseif ($config['type']=='hidden' || $config['type']=='password')
     @elseif ($config['type']=='select_multiple')
