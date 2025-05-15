@@ -245,7 +245,16 @@
                                                 @endif
                                             @endforeach
                                             <td class="text-right">
-                                                <button type="button" btn-alt onclick="lib_htmlVinculo('alt','{{App\Qlib\Qlib::encodeArray(@$config['data_selector'])}}')" title="{{__('Editar')}}" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i> </button>
+                                                @if(isset($config['data_selector']['btns_acao']['link_blank']) && ($link = $config['data_selector']['btns_acao']['link_blank']))
+                                                    @php
+                                                        if(isset($config['data_selector']['list']['id']) && ($ide=$config['data_selector']['list']['id'])){
+                                                            $link = str_replace('{id}',$ide,$link);
+                                                        }
+                                                    @endphp
+                                                    <a href="{{ $link }}" target="_blank" title="{{__('Editar')}}" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i> </a>
+                                                @else
+                                                    <button type="button" btn-alt onclick="lib_htmlVinculo('alt','{{App\Qlib\Qlib::encodeArray(@$config['data_selector'])}}')" title="{{__('Editar')}}" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i> </button>
+                                                @endif
                                                 <button type="button" onclick="lib_htmlVinculo('del','{{App\Qlib\Qlib::encodeArray(@$config['data_selector'])}}')" class="btn btn-outline-danger" title="{{__('Remover')}}" > <i class="fa fa-trash" aria-hidden="true"></i> </button>
                                             </td>
                                         </tr>

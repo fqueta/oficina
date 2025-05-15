@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\ContratosController;
 use App\Http\Controllers\admin\OrcamentoController;
 use App\Http\Controllers\admin\RdstationController;
 use App\Http\Controllers\admin\PostController;
+use App\Http\Controllers\admin\ZapguruController;
 use App\Http\Controllers\admin\ZapsingController;
 use App\Http\Controllers\BacklistController;
 use App\Jobs\NotificWinnerJob;
@@ -43,13 +44,19 @@ class TesteController extends Controller
         $token = $request->get('token') ? $request->get('token') : '675855ed0b876';
         $titulo = $request->get('titulo') ? $request->get('titulo') : 'Meu teste';
         $opc = $request->get('opc') ? $request->get('opc') : 1;
-        if($opc==2){
-            $link = (new OrcamentoController)->orcamento_html($token,'whatsapp');
-            $tm =$link.'<br>';
-            // $ret = $link;
-            $ret = $tm.'<a href="'.$link.'" target="_blank">Acessar</a>';
+        if($opc==1){
+            $email = $request->get('email') ? $request->get('email') : 'ger.maisaqui1@gmail.com';
+            $ret = (new ZapguruController)->criar_chat(['email'=>$email,'text'=>'Mensagem de teste']);
+            // $ret = (new ZapguruController)->post($chat_number,$action,$comple_url='');
+        }elseif($opc==2){
+            // $link = (new OrcamentoController)->orcamento_html($token,'whatsapp');
+            // $tm =$link.'<br>';
+            // // $ret = $link;
+            // $ret = $tm.'<a href="'.$link.'" target="_blank">Acessar</a>';
+            $ret = (new ZapguruController)->enviar_link_assinatura($token);
         }elseif($opc==3){
             $ret = (new OrcamentoController)->send_to_zapSing($token);
+            // dd($token);
             // $ret = (new OrcamentoController)->gerar_termo_orcamento($token);
 
         }elseif($opc==4){
@@ -97,58 +104,6 @@ class TesteController extends Controller
             }
         }
         return $ret;
-        // dd($ret);
-        // dd(NotificWinnerJob::dispatch());
-        // session(['user'=>'s']);
-        // $request->session()->put('close_popup','s');
-        // $request->session()->keep('close_popup');
-        // $value = $request->session()->all();
-        // dd($value);
-        // echo (new LeilaoController)->get_link_edit_admin(71);
-        // $ret = Qlib::get_postmeta($post_id,'pago');
-        // $ret = (new PaymentController) -> get_info_pagamento($post_id);
-        // session()->forget('ganhador');
-        // dd(session()->get('ganhador'));
-        // return $ret;
-        // dd(Auth::user());
-        // $ret = env('APP_NAME');
-        // $ret = (new LeilaoController)->enviar_email([
-        //     'type' => 'notifica_finalizado',
-        //     'lance_id' => 213,
-        //     'subject' => 'Leilão Finalizado',
-        //     'mensagem' => 'Ola mensagem',
-        //     // 'link_pagamento' => $link_pagamento,
-        // ]);
-        // $ret['salv'] = (new ContratosController)->update_tokenCRM(5550,[
-        //     'token_externo' => '54233',
-        // ]);
-        // // $notific = (new LanceController)->notifica_superado($leilao_id,$id_a);
-        // $ret = (new LeilaoController)->notifica_termino(62,'admin');
-        // dd($ret);
-    //    echo  (new UserController)->get_first_admin();
-        // $ret['list'] = (new ContratosController)->get_contratos_crm();
-        // $ret = Qlib::createSlug('Fernando Teste programador aatiça ação 200,.52');
-        // return $ret;
-        // $up = Qlib::update_postmeta(45,'notifica_termino_leilao','n');
-        // $me = Qlib::get_postmeta(36,'notifica_termino_leilao',true);
-        // dd($me);
-        // dd(config('app.debug'));
-        // $p = (new LanceController)->marca_lance_superado(36);
-        // dd($p);
-        // // dd($ret);
-        // return false;
-        // //     echo Qlib::get_subdominio();
-        // $dados = (new FamiliaController($user))->rendaFamiliar(3145);
-        // dd($dados);
-            // $host = request()->getHttpHost();
-        // echo $host ."<br/>";
-        // $getHost = request()->getHost();
-        // echo $getHost ."<br/>";
-        // $hostwithHttp = request()->getSchemeAndHttpHost();
-        // echo $hostwithHttp ."<br/>";
-        // $subdomain = $route->getParameter('subdomain');
-        //dd($route);
-        // return view('teste',$config);
     }
     public function ajax(){
         $limit = isset($_GET['limit']) ?$_GET['limit'] : 50;
@@ -161,49 +116,9 @@ class TesteController extends Controller
         $dir_img = $urlApi.'/uploads/posts/image_previews/{id}/thumbnail/{image_preview_file_name}';
         $dir_file = $urlApi.'/uploads/diaries/files/{id}/original/{file_file_name}';
 
-        //$arquivo = $this->carregaArquivo($link_html);
-        //$temaHTML = explode('<!--separa--->',$arquivo);
         $api = file_get_contents($link);
         $arr_api = Qlib::lib_json_array($api);
-        /*
-        $tema1 = '<ul id="conteudo" class="list-group">{tr}</ul>';
-        $tema2 = '<li class="list-group-item" itemprop="headline"><a href="{link_file}" target="_blank">{file_file_name} – {date}</a></li>';
-        $tr=false;
-        if(isset($arr_api['data']) && !empty($arr_api['data'])){
-          foreach ($arr_api['data'] as $key => $value) {
-              $link = false;
-              $link_file = str_replace('{id}',$value['id'],$dir_file);
-              $link_file = str_replace('{file_file_name}',$value['file_file_name'],$link_file);
 
-
-              $conteudoPost = isset($value['content'])?:false;
-              $date = false;
-              $time = false;
-              $datetime = str_replace(' ','T',$value['date']);
-              $d = explode(' ',$value['date']);
-
-              if(isset($d[0])){
-                $date = Qlib::dataExibe($d[0]);
-              }
-              if(isset($d[1])){
-                $time = $d[1];
-              }
-              $file_name = str_replace('.pdf','',$value['file_file_name']);
-              $file_name = str_replace('.PDF','',$file_name);
-              $tr .= str_replace('{file_file_name}',$file_name,$tema2);
-              $tr = str_replace('{link}',$link,$tr);
-              $tr = str_replace('{link_file}',$link_file,$tr);
-              $tr = str_replace('{time}',$time,$tr);
-              $tr = str_replace('{date}',$date,$tr);
-              $tr = str_replace('{description}',$value['description'],$tr);
-              $tr = str_replace('{datetime}',$datetime,$tr);
-          }
-        }
-        $link_veja_mais = '/diario-oficial';
-        $ret = str_replace('{tr}',$tr,$tema1);
-        //$ret = str_replace('{id_sec}',$id_sec,$ret);
-        $ret = str_replace('{link_veja_mais}',$link_veja_mais,$ret);
-        */
         return response()->json($arr_api);
     }
     /**

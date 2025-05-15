@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\admin\EventController;
+use App\Http\Controllers\admin\OrcamentoController;
+use App\Http\Controllers\admin\PdfGenerateController;
 use App\Http\Controllers\admin\QuickCadController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\_upload;
@@ -238,7 +240,7 @@ class UserController extends Controller
             'password'=>['label'=>'Senha','active'=>false,'type'=>'password','exibe_busca'=>'d-none','event'=>'','tam'=>'3'],
             'sep1'=>['label'=>'Documento','active'=>false,'type'=>'html_script','exibe_busca'=>'d-none','event'=>'','tam'=>'12','script'=>'<h6 class="text-left pt-2">'.__('Documentos').'</h6><hr class="mt-0">','script_show'=>''],
             'sep1'=>['label'=>'Endereço','active'=>false,'type'=>'html_script','exibe_busca'=>'d-none','event'=>'','tam'=>'12','script'=>'<h6 class="text-left pt-2">'.__('Configurações').'</h6><hr class="mt-0">','script_show'=>''],
-            'config[cep]'=>['label'=>'CEP','active'=>false,'placeholder'=>'','type'=>'tel','exibe_busca'=>'d-block','event'=>'mask-cep onchange=buscaCep1_0(this.value)','tam'=>'3','cp_busca'=>'config][cep'],
+            'config[cep]'=>['label'=>'CEP','active'=>false,'placeholder'=>'','js'=>true,'type'=>'tel','exibe_busca'=>'d-block','event'=>'mask-cep onchange=buscaCep1_0(this.value)','tam'=>'3','cp_busca'=>'config][cep'],
             'config[endereco]'=>['label'=>'Endereço','active'=>false,'placeholder'=>'','type'=>'text','exibe_busca'=>'d-block','event'=>'endereco=cep','tam'=>'7','cp_busca'=>'config][endereco'],
             'config[numero]'=>['label'=>'Numero','active'=>false,'placeholder'=>'','type'=>'text','exibe_busca'=>'d-block','event'=>'numero=cep','tam'=>'2','cp_busca'=>'config][numero'],
             'config[complemento]'=>['label'=>'Complemento','active'=>false,'placeholder'=>'','type'=>'text','exibe_busca'=>'d-block','event'=>'','tam'=>'3','cp_busca'=>'config][complemento'],
@@ -1611,6 +1613,15 @@ class UserController extends Controller
             }
             $ret['resultado'] = $resultado;
         }
+        return $ret;
+    }
+    public function termo_pdf($token){
+        // $token = $request->get('token');
+        // dd($token);
+        $type = request()->get('type') ? request()->get('type') : 'pdf';
+        $ret = (new OrcamentoController)->gerar_termo_orcamento($token,false,false,false,$type);
+
+        // dd($texto);
         return $ret;
     }
 }

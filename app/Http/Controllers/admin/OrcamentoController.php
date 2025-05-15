@@ -461,7 +461,7 @@ class OrcamentoController extends Controller
      */
     public function get_orcamento($token){
         // $id = Qlib::get_id_by_token($token);
-        $d = Post::select('posts.*','users.email','users.name','users.cpf','users.config as config_user')->join('users','posts.guid','=','users.id')->where('posts.token','=',$token)->get();
+        $d = Post::select('posts.*','users.email','users.name','users.id as user_id','users.cpf','users.config as config_user')->join('users','posts.guid','=','users.id')->where('posts.token','=',$token)->get();
         if($d->isNotEmpty()){
             $d = $d[0]->toArray();
             if(is_string($d['config'])){
@@ -469,6 +469,14 @@ class OrcamentoController extends Controller
             }
             if(is_string($d['config_user'])){
                 $d['config_user'] = Qlib::lib_json_array($d['config_user']);
+            }
+            //explor o campo salvar_webhook para verificar se ja teve uma interação da webhook do zapzing
+            $d['salvar_webhook'] = null;
+            if(isset($d['ID']) && ($id_orcamento=$d['ID'])){
+                $web = Qlib::get_postmeta($id_orcamento,'salvar_webhook',true);
+                if($web){
+                    $d['salvar_webhook'] = Qlib::lib_json_array($web);
+                }
             }
         }else{
             return false;
@@ -558,7 +566,9 @@ class OrcamentoController extends Controller
         // $conteudo = str_replace('{servicos}',$servicos,$conteudo);
         // $conteudo = str_replace('{orcamento}',$oracamento,$conteudo);
         $gerar_pdf = $this->gerar_termo_orcamento($token,$d,$conteudo,$titulo);
+        // dump($gerar_pdf);
         $body['url_pdf'] = isset($gerar_pdf['caminho']) ? $gerar_pdf['caminho'] : '';
+        // dd($body);
         $ret = (new ZapsingController)->post([
             "body" => $body
         ]);
@@ -572,8 +582,9 @@ class OrcamentoController extends Controller
     }
     /**
      * Metodo para gerar um termo em pdf de um determinado orçamento mediante um token
+     * @uso (new OrcamentoController)->gerar_termo_orcamento($token);
      */
-    public function gerar_termo_orcamento($token,$d=false,$conteudo=false,$titulo=false){
+    public function gerar_termo_orcamento($token,$d=false,$conteudo=false,$titulo=false,$type='server'){
         if(!$d && $token){
             $d = $this->get_orcamento($token);
         }
@@ -611,12 +622,34 @@ class OrcamentoController extends Controller
                 }
             }
         }
-        $arquivo = 'termos/'.$token.'/nao_assinado.pdf';
-        $ret = (new PdfController)->salvarPdf(['titulo'=>$titulo,'conteudo'=>$conteudo],['arquivo'=>$arquivo]);
-        if($ret['exec']){
-            $ret['data'] = Qlib::dataLocal();
-            $post_id = Qlib::get_id_by_token($token);
-            $ret['salvar'] = Qlib::update_postmeta($post_id,'termo_gerado',Qlib::lib_array_json($ret));
+        // $arquivo = 'termos/'.$token.'/nao_assinado.pdf';
+        // $f_exibe = isset($config['f_exibe']) ? $config['f_exibe'] : 'pdf';
+        if($type=='pdf' && $conteudo){
+            $ret = (new PdfGenerateController)->convert_html([
+                'html'=>$conteudo,
+                'titulo'=>$titulo,
+                'nome_aquivo_savo'=>$titulo,
+                'token'=>$token,
+                'f_exibe'=>$type,
+            ]);
+        }else{
+            $ret = (new PdfGenerateController)->convert_html([
+                'html'=>$conteudo,
+                'token'=>$token,
+                'nome_aquivo_savo'=>$titulo,
+                'titulo'=>$titulo,
+                'f_exibe'=>$type,
+            ]);
+            // $ret = (new PdfController)->salvarPdf(['titulo'=>$titulo,'conteudo'=>$conteudo],['arquivo'=>$arquivo]);
+            if(isset($ret['exec'])){
+                $ret['exec'] = true;
+                $ret['mens'] = 'Gerado com sucesso';
+                $ret['color'] = 'success';
+                $ret['caminho'] = @$ret['url'];
+                $ret['data'] = Qlib::dataLocal();
+                $post_id = Qlib::get_id_by_token($token);
+                $ret['salvar'] = Qlib::update_postmeta($post_id,'termo_gerado',Qlib::lib_array_json($ret));
+            }
         }
         return $ret;
     }

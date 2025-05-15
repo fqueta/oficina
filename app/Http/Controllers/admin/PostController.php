@@ -872,6 +872,7 @@ class PostController extends Controller
                     ],
                     'email'=>['label'=>'Email','type'=>'text'], //campos que serão motands na tabela
                 ],
+                'btns_acao'=>['link_blank'=>url('/admin/users/{id}/edit?redirect=/admin/users?idCad={id}')], //campos que serão motands na tabela
                 'tab' =>'users',
                 'placeholder' =>'Digite somente o nome do '.$label1.'...',
                 'janela'=>[

@@ -68,6 +68,7 @@ class ZapsingController extends Controller
             try {
                 //code...
                 $urlEndpoint = $this->url_api.'/'.$endpoint;
+                $urlEndpoint = str_replace('//','/',$urlEndpoint);
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Authorization' => $this->api_id,
@@ -112,9 +113,12 @@ class ZapsingController extends Controller
             $post_id = Qlib::get_id_by_token($token);
             //salvar hisorico do webhook
             $ret['salvar_webhook'] = Qlib::update_postmeta($post_id,'salvar_webhook',$json);
+            //enviar a mensagem pelo guru
+            $ret['envia'] = (new ZapguruController)->enviar_link_assinatura($token);
         }
         return $ret;
     }
+
     /**
      * Verifica os dodos do documento remoto
      * @param string $token do documento

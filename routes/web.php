@@ -177,11 +177,12 @@ Route::resource('/leiloes','\App\Http\Controllers\LeilaoController',['parameters
 Route::resource('/users_site','\App\Http\Controllers\UserController',['parameters' => [
     'users_site' => 'id'
 ]]);
-Route::get('/leiloes/get-data-contrato/{token}', [App\Http\Controllers\LeilaoController::class, 'view_data_contrato'])->name('data.contrato');
-Route::get('/leiloes/list-contratos/{id}', [App\Http\Controllers\LeilaoController::class, 'view_list_contrato'])->name('list.contrato');
+// Route::get('/leiloes/get-data-contrato/{token}', [App\Http\Controllers\LeilaoController::class, 'view_data_contrato'])->name('data.contrato');
+// Route::get('/leiloes/list-contratos/{id}', [App\Http\Controllers\LeilaoController::class, 'view_list_contrato'])->name('list.contrato');
 
 // Route::get('/test-email',[EmailController::class,'sendEmailTest']);
 Route::get('/suspenso',[UserController::class,'suspenso'])->name('cobranca.suspenso');
+Route::get('/termo-pdf/{token}',[UserController::class,'termo_pdf'])->name('termo.pdf');
 Route::prefix('cobranca')->group(function(){
     Route::get('/fechar',[UserController::class,'pararAlertaFaturaVencida'])->name('alerta.cobranca.fechar');
 });

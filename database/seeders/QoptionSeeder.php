@@ -37,6 +37,18 @@ class QoptionSeeder extends Seeder
                 'obs'=>'',
             ],
             [
+                'nome'=>'Credenciais Zapguru',
+                'url'=>'credenciais_zapguru',
+                'valor'=>Qlib::lib_array_json([
+                    'key'=>'',
+                    'account_id'=>'',
+                    'phone_id'=>'',
+                    'user_id'=>'',
+                    'dialog_id'=>'',
+                ]),
+                'obs'=>'',
+            ],
+            [
                 'nome'=>'Id do termo',
                 'url'=>'id_termo',
                 'valor'=>'10',
@@ -51,7 +63,7 @@ class QoptionSeeder extends Seeder
             [
                 'nome'=>'Id do assinante pela oficina',
                 'url'=>'id_assinante_oficina',
-                'valor'=>'1',
+                'valor'=>'3',
                 'obs'=>'',
             ],
             [
@@ -85,7 +97,7 @@ class QoptionSeeder extends Seeder
             [
                 'nome'=>'Token do Asaas',
                 'url'=>'token-asaas',
-                'valor'=>'9d0c7a708698cd8c74b883a37c2a836282672587e7dd34053773e012d7c10b94', //token do sandbox
+                'valor'=>'', //token do sandbox
                 'obs'=>'',
             ],
             [
@@ -178,8 +190,8 @@ class QoptionSeeder extends Seeder
                 'nome'=>'Credencias do zapsing',
                 'url'=>'credencias_zapsing',
                 'valor'=>Qlib::lib_array_json([
-                    'url_api'=>'',
-                    'id_api'=>'',
+                    'url_api'=>'https://sandbox.api.zapsign.com.br/api/v1/',
+                    'id_api'=>'fe316dae-025c-4b2e-8a69-c376c0d6384f07f2aa64-99b6-4f66-be5f-dfff76344680',
                 ]),
                 'obs'=>'',
             ],
