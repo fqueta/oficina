@@ -78,17 +78,28 @@ class TesteController extends Controller
             $mensagem =  'Antenção foi solicitado um orçamento por <b>'.$dc['name'].'</b> em '.Qlib::dataLocal();
             $mensagem .= (new OrcamentoController)->orcamento_html($token,'markdown');
             $nome = 'Fernando Queta';
-            $cc = 'suporte@maisaqui.com.br';
-            $from = 'suporte@aeroclubejf.com.br';
+            $cc = 'quetafernando1@gmail.com';
+            // $cc = 'contato@aeroclubejf.com.br';
+            $from = 'nao_responda@aeroclubejf.com.br';
             $email = 'contato@aeroclubejf.com.br';
+            $email_admin = explode(',',Qlib::qoption('email_gerente'));
+            // $d
             $details = [
-                'email' => $email,
-                'cc' => $cc,
-                // 'from' => $from,
-                'name' => $nome,
-                'subject' => $subject,
-                'message' => $mensagem
-            ];
+                                'email' => $email_admin[0],
+                                'from' => $from,
+                                'name' => $nome,
+                                'subject' => $subject,
+                                'message' => $mensagem,
+                                // 'cc' => $email_admin[1],
+                                // 'bcc' => @$email_admin[2],
+                            ];
+            if(isset($email_admin[1])){
+                $details['cc'] = $email_admin[1];
+            }
+            if(isset($email_admin[2])){
+                $details['bcc'] = $email_admin[2];
+            }
+            // dd($details);
             if($request->get('envia')==1){
                 if(isset($details['cc'])){
                     $ret = Mail::to($details['email'])->cc($details['cc'])->send(new EnviaMail($details));

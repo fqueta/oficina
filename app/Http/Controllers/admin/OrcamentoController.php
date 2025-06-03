@@ -221,14 +221,14 @@ class OrcamentoController extends Controller
                 $ret['idCad'] = $post_id;
                 $ret['salvar_consulta'] = Qlib::update_postmeta($post_id,'consulta_rab',$consulta);
                 if(is_array($email_admin)){
-                    $from = 'suporte@aeroclubejf.com.br';
+                    $from = 'nao_responda@aeroclubejf.com.br';
                     // dd($email_admin);
                     // foreach ($email_admin as $email) {
                         if(isset($email_admin[0])){
                             $details = [
                                 'email' => $email_admin[0],
                                 'from' => $from,
-                                'name' => '',
+                                'name' => @$dc['name'],
                                 'subject' => $subject,
                                 'message' => $mensagem,
                                 'cc' => $email_admin[1],
@@ -255,8 +255,8 @@ class OrcamentoController extends Controller
                 $ret['redirect'] = $link_redirect;
                 //Enviar para o zapsing
                 if($enviar_assinatura=='s'){
-                    // $ret['EnvioZapsingJob'] = EnvioZapsingJob::dispatch($token);
-                    $send_to_zapSing = $this->send_to_zapSing($token);
+                    $ret['EnvioZapsingJob'] = EnvioZapsingJob::dispatch($token);
+                    // $send_to_zapSing = $this->send_to_zapSing($token);
                     $ret['RdstationJob'] = RdstationJob::dispatch($token);
                     // if(Qlib::is_backend()){
                     //     $ret['send_to_zapSing'] = $send_to_zapSing;
