@@ -600,7 +600,7 @@ class OrcamentoController extends Controller
         // $conteudo = str_replace('{servicos}',$servicos,$conteudo);
         // $conteudo = str_replace('{orcamento}',$oracamento,$conteudo);
         $gerar_pdf = $this->gerar_termo_orcamento($token,$d,$conteudo,$titulo);
-        dd($gerar_pdf);
+        // dd($gerar_pdf);
         $body['url_pdf'] = isset($gerar_pdf['caminho']) ? $gerar_pdf['caminho'] : '';
         // dd($body);
         $ret = (new ZapsingController)->post([
@@ -629,7 +629,7 @@ class OrcamentoController extends Controller
         $nome = isset($d['name']) ? $d['name'] : '';
         $token = isset($d['token']) ? $d['token'] : '';
         $email = isset($d['email']) ? $d['email'] : '';
-        $cpf = $d['cpf'] ? $d['cpf'] : '';
+        $cpf = isset($d['cpf']) ? $d['cpf'] : '';
         if(!$titulo){
             $titulo = 'Termo de solicitação de orçamento '.$id;
         }
