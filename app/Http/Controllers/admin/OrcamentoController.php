@@ -600,7 +600,7 @@ class OrcamentoController extends Controller
         // $conteudo = str_replace('{servicos}',$servicos,$conteudo);
         // $conteudo = str_replace('{orcamento}',$oracamento,$conteudo);
         $gerar_pdf = $this->gerar_termo_orcamento($token,$d,$conteudo,$titulo);
-        // dump($gerar_pdf);
+        dd($gerar_pdf);
         $body['url_pdf'] = isset($gerar_pdf['caminho']) ? $gerar_pdf['caminho'] : '';
         // dd($body);
         $ret = (new ZapsingController)->post([

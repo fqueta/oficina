@@ -57,8 +57,8 @@ class TesteController extends Controller
             $ret = (new ZapguruController)->enviar_link_assinatura($token);
         }elseif($opc==3){
             // dd($token);
-            $ret = (new OrcamentoController)->gerar_termo_orcamento($token);
-            // $ret = (new OrcamentoController)->send_to_zapSing($token);
+            // $ret = (new OrcamentoController)->gerar_termo_orcamento($token);
+            $ret = (new OrcamentoController)->send_to_zapSing($token);
 
         }elseif($opc==4){
             //download file
