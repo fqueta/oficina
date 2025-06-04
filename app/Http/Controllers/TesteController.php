@@ -45,9 +45,10 @@ class TesteController extends Controller
         $titulo = $request->get('titulo') ? $request->get('titulo') : 'Meu teste';
         $opc = $request->get('opc') ? $request->get('opc') : 1;
         if($opc==1){
-            $email = $request->get('email') ? $request->get('email') : 'ger.maisaqui1@gmail.com';
-            $ret = (new ZapguruController)->criar_chat(['email'=>$email,'text'=>'Mensagem de teste']);
+            // $email = $request->get('email') ? $request->get('email') : 'ger.maisaqui1@gmail.com';
+            // $ret = (new ZapguruController)->criar_chat(['email'=>$email,'text'=>'Mensagem de teste']);
             // $ret = (new ZapguruController)->post($chat_number,$action,$comple_url='');
+            $ret = (new OrcamentoController)->enviar_email($token);
         }elseif($opc==2){
             // $link = (new OrcamentoController)->orcamento_html($token,'whatsapp');
             // $tm =$link.'<br>';
@@ -55,9 +56,9 @@ class TesteController extends Controller
             // $ret = $tm.'<a href="'.$link.'" target="_blank">Acessar</a>';
             $ret = (new ZapguruController)->enviar_link_assinatura($token);
         }elseif($opc==3){
-            $ret = (new OrcamentoController)->send_to_zapSing($token);
             // dd($token);
-            // $ret = (new OrcamentoController)->gerar_termo_orcamento($token);
+            $ret = (new OrcamentoController)->gerar_termo_orcamento($token);
+            // $ret = (new OrcamentoController)->send_to_zapSing($token);
 
         }elseif($opc==4){
             //download file

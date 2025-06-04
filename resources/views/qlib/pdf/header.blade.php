@@ -30,7 +30,7 @@
 <body>
     <div class="header">
         <!-- Imagem do cabeçalho -->
-        <img src="https://crm.aeroclubejf.com.br/enviaImg/uploads/ead/67fd5bad5a8ee/67fd7dffaa524.png" alt="header da pagina">
+        <img src="https://crm.aeroclubejf.com.br/enviaImg/uploads/ead/684057323a505/684058365b8d2.png" alt="header da pagina">
 
         <!-- Informações adicionais (opcional) -->
         {{-- <div class="header-info">

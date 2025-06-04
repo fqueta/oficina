@@ -207,47 +207,14 @@ class OrcamentoController extends Controller
                 $link_redirect .= '?zlink='.base64_encode($link_zap);
             }
             try {
-                $email_admin = explode(',',Qlib::qoption('email_gerente'));
+                $post_id = Qlib::get_id_by_token($token);
+                $ret['salvar_consulta'] = Qlib::update_postmeta($post_id,'consulta_rab',$consulta);
+                $ret['termo'] = $this->salvar_aceito_termo(['id_cliente'=>$id_cliente,'post_id'=>$post_id,'meta'=>@$d['meta']]);
+
                 $ret['exec'] = true;
                 //enviar 2 emails para admin
-                $subject = 'SOLICITAÇÃO DE AGENDAMENTO DE MANUTENÇÃO';
-                // $ret['env'] = EnviarEmail::dispatch($data);
-                $mensagem =  'Antenção foi solicitado um orçamento por <b>'.$dc['name'].'</b> em '.Qlib::dataLocal();
-                $mensagem .= $this->orcamento_html($token);
-                //Salvar o contrato
-                $post_id = Qlib::get_id_by_token($token);
-                $ret['termo'] = $this->salvar_aceito_termo(['id_cliente'=>$id_cliente,'post_id'=>$post_id,'meta'=>@$d['meta']]);
-                //salvar a consulta
-                $ret['idCad'] = $post_id;
-                $ret['salvar_consulta'] = Qlib::update_postmeta($post_id,'consulta_rab',$consulta);
-                if(is_array($email_admin)){
-                    $from = 'nao_responda@aeroclubejf.com.br';
-                    // dd($email_admin);
-                    // foreach ($email_admin as $email) {
-                        if(isset($email_admin[0])){
-                            $details = [
-                                'email' => $email_admin[0],
-                                'from' => $from,
-                                'name' => @$dc['name'],
-                                'subject' => $subject,
-                                'message' => $mensagem,
-                                'cc' => $email_admin[1],
-                                'bcc' => @$email_admin[2],
-                            ];
-                            SendEmailJob::dispatch($details);
-                        }
-                    // }
-                }
-                $mensagem = '<p>Olá <b>'.$dc['name'].'</b> obrigado pelo seu contato!</p><p>Sua solicitação foi encaminhada para a nossa oficina em breve entraremos em contato.</p>';
-                $mensagem .= $this->orcamento_html($token);
-                $details_cliente = [
-                    'email' => $dc['email'],
-                    'name' => $dc['name'],
-                    'subject' => $subject,
-                    'message' => $mensagem
-                ];
-                //enviar 1 email copia para o cliente
-                SendEmailJob::dispatch($details_cliente);
+                $ret['enviar_email'] = $this->enviar_email($token);
+
                 //criar um link de redirecioanmento
                 $ret['mens'] = __('Orçamento enviado com sucesso!');
                 $ret['color'] = 'success';
@@ -264,13 +231,80 @@ class OrcamentoController extends Controller
                 }
             } catch (\Throwable $th) {
                 $ret['link_zap'] = $link_zap;
-                $ret['redirect'] = $link_redirect;
+                // $ret['redirect'] = $link_redirect;
                 $ret['erro'] = $th;
-                $ret['mens'] = __('Tivemos um erro inesperdado entre em contato com o suporte!');
+                $ret['exec'] = false;
+                $ret['mens'] = __('Tivemos um erro inesperado entre em contato com o suporte!');
                 $ret['color'] = 'danger';
             }
         }
         // $ret['salv'] = $salv;
+        return $ret;
+    }
+    /**
+     * Metodo para enviar os emails para o cliente e para o adiminstrador sobre a solicitação de orçamento
+     * @param $token do orçamento
+     */
+    public function enviar_email($token){
+        $do = $this->get_orcamento($token);
+        $email_admin = explode(',',Qlib::qoption('email_gerente'));
+        try {
+            //code...
+            if(isset($do['name']) && isset($do['email'])){
+                $id_cliente = isset($do['user_id']) ? $do['user_id'] : null;
+                $post_id = isset($do['ID']) ? $do['ID'] : null;
+                $subject = 'SOLICITAÇÃO DE AGENDAMENTO DE MANUTENÇÃO';
+
+                // $ret['env'] = EnviarEmail::dispatch($data);
+                $mensagem =  'Antenção foi solicitado um orçamento por <b>'.$do['name'].'</b> em '.Qlib::dataLocal();
+                $mensagem .= $this->orcamento_html($token);
+                //Salvar o contrato
+
+                //salvar a consulta
+                $ret['idCad'] = $post_id;
+                if(is_array($email_admin)){
+                    $from = 'nao_responda@aeroclubejf.com.br';
+                    // dd($email_admin);
+                    // foreach ($email_admin as $email) {
+                        if(isset($email_admin[0])){
+                            $details = [
+                                'email' => $email_admin[0],
+                                'from' => $from,
+                                'name' => $do['name'],
+                                'subject' => $subject,
+                                'message' => $mensagem,
+                            ];
+                            if(isset($email_admin[1])){
+                                $details['cc'] = $email_admin[1];
+                            }
+                            if(isset($email_admin[2])){
+                                $details['bcc'] = $email_admin[2];
+                            }
+                            SendEmailJob::dispatch($details);
+                        }
+                    // }
+                }
+                $mensagem = '<p>Olá <b>'.$do['name'].'</b> obrigado pelo seu contato!</p><p>Sua solicitação foi encaminhada para a nossa oficina em breve entraremos em contato.</p>';
+                $mensagem .= $this->orcamento_html($token);
+                $details_cliente = [
+                    'email' => $do['email'],
+                    'name' => $do['name'],
+                    'subject' => $subject,
+                    'message' => $mensagem
+                ];
+                //enviar 1 email copia para o cliente
+                SendEmailJob::dispatch($details_cliente);
+            }
+            $ret['mens'] = 'Envio agendado com sucesso!';
+            $ret['color'] = 'success';
+            $ret['exec'] = true;
+        } catch (\Throwable $th) {
+            $ret['exec'] = false;
+            $ret['color'] = 'danger';
+            $ret['mens'] = 'Erro no agendamento de envio';
+            $ret['erro'] = $th->getMessage();
+            //throw $th;
+        }
         return $ret;
     }
     /**

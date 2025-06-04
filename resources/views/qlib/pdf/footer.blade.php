@@ -47,7 +47,7 @@
             Documento gerado em: {{ now()->format('d/m/Y H:i') }} pelo {{ config('app.name')}}<br>
             {{-- {PAGE_NUM} de {PAGE_COUNT} --}}
         </div>
-        <img src="https://crm.aeroclubejf.com.br/enviaImg/uploads/ead/67f8242bbaf7a/67fd80f044fb2.png" class="footer-logo">
+        <img src="https://crm.aeroclubejf.com.br/enviaImg/uploads/ead/684057323a505/68405835e7f86.png" class="footer-logo">
     </div>
 </body>
 </html>
