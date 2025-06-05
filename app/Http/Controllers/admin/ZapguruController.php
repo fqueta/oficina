@@ -362,23 +362,33 @@ class ZapguruController extends Controller
         $d = (new OrcamentoController)->get_orcamento($token_orcamento);
         // dd($d);
         $ret['exec'] = false;
-        $salvar_webhook = isset($d['salvar_webhook']) ? $d['salvar_webhook'] : [];
-        dd($salvar_webhook);
+        $webhook_zapsing = isset($d['webhook_zapsing']) ? $d['webhook_zapsing'] : [];
+        // dd($webhook_zapsing);
         $email = isset($d['email']) ? $d['email'] : false;
-        if(isset($salvar_webhook['signers'][0]['sign_url']) && is_string($salvar_webhook['signers'][0]['sign_url']) && $email){
-            $app = config('app.name');
-            $mens = 'Olá *{nome}* sua assinatura foi solicitada, pelo App *{app}*, para o documento, *{nome_doc}* segue o link de assinatura {link}';
-            $nome = isset($salvar_webhook['signers'][0]['name']) ? $salvar_webhook['signers'][0]['name'] : '';
-            $nome_doc = isset($salvar_webhook['name']) ? $salvar_webhook['name'] : '';
-            $link = isset($salvar_webhook['signers'][0]['sign_url']) ? $salvar_webhook['signers'][0]['sign_url'] : '';
-            $mens = str_replace('{nome}',$nome,$mens);
-            $mens = str_replace('{nome_doc}',$nome_doc,$mens);
-            $mens = str_replace('{link}',$link,$mens);
-            $mens = str_replace('{app}',$app,$mens);
-            //Ver se enviar com o telefone ou o id do usuario..
-            // dd($mens,$email);
-            // $email = $request->get('email') ? $request->get('email') : 'ger.maisaqui1@gmail.com';
-            $ret = (new ZapguruController)->criar_chat(['email'=>$email,'text'=>$mens]);
+        $app = config('app.name');
+        $mens = 'Olá *{nome}* sua assinatura foi solicitada, pelo App *{app}*, para o documento, *{nome_doc}* segue o link de assinatura {link}';
+        $i = 0;
+        if(isset($webhook_zapsing['signers'][$i]['sign_url']) && is_string($webhook_zapsing['signers'][$i]['sign_url']) && $email && ($signers=$webhook_zapsing['signers'])){
+            if(is_array($signers)){
+                foreach ($signers as $k => $webhook_zaps) {
+                    $nome = isset($webhook_zaps['name']) ? $webhook_zaps['name'] : '';
+                    $nome_doc = isset($webhook_zapsing['name']) ? $webhook_zapsing['name'] : '';
+                    // $email = isset($webhook_zapsing['email']) ? $webhook_zapsing['email'] : $email;
+                    $email = isset($webhook_zaps['email']) ? $webhook_zaps['email'] : '';
+                    $link = isset($webhook_zaps['sign_url']) ? $webhook_zaps['sign_url'] : '';
+                    $mens = str_replace('{nome}',$nome,$mens);
+                    $mens = str_replace('{nome_doc}',$nome_doc,$mens);
+                    $mens = str_replace('{link}',$link,$mens);
+                    $mens = str_replace('{app}',$app,$mens);
+                    //Ver se enviar com o telefone ou o id do usuario..
+                    // dd($mens,$email);
+                    // $email = $request->get('email') ? $request->get('email') : 'ger.maisaqui1@gmail.com';
+                    $ret = (new ZapguruController)->criar_chat(['email'=>$email,'text'=>$mens]);
+                    //Registrar um log
+                    Log::info('enviar_link_assinatura para o zapguru:', $ret);
+                }
+            }
+
         }
         return $ret;
     }
@@ -444,12 +454,16 @@ class ZapguruController extends Controller
 			// $dadosCli = Qlib::dados_tab($tab,['campos'=>'*','where'=>"WHERE ".Qlib::compleDelete()."$comSc"]);
             $dadosCli = User::where('email','=',$email)->get();
             $telefone = false;
-            $nome = false;
-			if($dadosCli->count()){
+            $nome = '';
+            if($dadosCli->count()){
                 $dadosCli = $dadosCli->toArray();
                 $nome 		 	= isset($dadosCli[0]['name'])?$dadosCli[0]['name'] 	:'';
                 $ddi 	 	    = isset($dadosCli[0]['config']['ddi'])?$dadosCli[0]['config']['ddi'] 	:'';
                 $telefone 	 	= isset($dadosCli[0]['config']['telefonezap'])?$dadosCli[0]['config']['telefonezap'] 	:'';
+                $ret['email'] = $email;
+
+                $ret['telefone'] = $telefone;
+                // return $ret;
                 $telefone = $ddi.$telefone;
                 $telefone 	 	= str_replace('(','',$telefone);
                 $telefone 	 	= str_replace(')','',$telefone);
@@ -482,7 +496,7 @@ class ZapguruController extends Controller
                     $name = urlencode($name);
                 }
                 // return $nome;
-                $url = $this->url.'action='.$action.'&phone_id='.$phone_id.'&name='.$name.'&text='.$text.'&chat_number='.$chat_number;
+                $url = $this->url.'action='.$action.'&phone_id='.$phone_id.'&name='.$name.'&chat_number='.$chat_number.'&text='.$text;
                 if($dialog_id){
                     $url .= '&dialog_id='.$dialog_id.'';
                 }
@@ -520,6 +534,7 @@ class ZapguruController extends Controller
                     $ret['mens'] = Qlib::formatMensagem0($ret['response']['description'],$css);
                 }
 			}
+            $ret['dadosCli'] = $dadosCli;
 		}
 
 		return $ret;

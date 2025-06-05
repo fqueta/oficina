@@ -506,10 +506,12 @@ class OrcamentoController extends Controller
             }
             //explor o campo salvar_webhook para verificar se ja teve uma interação da webhook do zapzing
             $d['salvar_webhook'] = null;
+            $d['webhook_zapsing'] = null;
             if(isset($d['ID']) && ($id_orcamento=$d['ID'])){
                 $web = Qlib::get_postmeta($id_orcamento,'salvar_webhook',true);
                 if($web){
                     $d['salvar_webhook'] = Qlib::lib_json_array($web);
+                    $d['webhook_zapsing'] = $d['salvar_webhook'];
                 }
             }
         }else{
