@@ -366,24 +366,29 @@ class ZapguruController extends Controller
         // dd($webhook_zapsing);
         $email = isset($d['email']) ? $d['email'] : false;
         $app = config('app.name');
-        $mens = 'Olá *{nome}* sua assinatura foi solicitada, pelo App *{app}*, para o documento, *{nome_doc}* segue o link de assinatura {link}';
+        $temm = 'Olá *{nome}* sua assinatura foi solicitada, pelo App *{app}*, para o documento, *{nome_doc}* segue o link de assinatura {link}';
         $i = 0;
         if(isset($webhook_zapsing['signers'][$i]['sign_url']) && is_string($webhook_zapsing['signers'][$i]['sign_url']) && $email && ($signers=$webhook_zapsing['signers'])){
             if(is_array($signers)){
-                foreach ($signers as $k => $webhook_zaps) {
-                    $nome = isset($webhook_zaps['name']) ? $webhook_zaps['name'] : '';
-                    $nome_doc = isset($webhook_zapsing['name']) ? $webhook_zapsing['name'] : '';
-                    // $email = isset($webhook_zapsing['email']) ? $webhook_zapsing['email'] : $email;
-                    $email = isset($webhook_zaps['email']) ? $webhook_zaps['email'] : '';
-                    $link = isset($webhook_zaps['sign_url']) ? $webhook_zaps['sign_url'] : '';
-                    $mens = str_replace('{nome}',$nome,$mens);
+                foreach ($signers as $k => $signer) {
+                    $nome = isset($signer['name']) ? $signer['name'] : '';
+                    $nome_doc = isset($signer['name']) ? $signer['name'] : '';
+                    // $email = isset($signering['email']) ? $signering['email'] : $email;
+                    $email = isset($signer['email']) ? $signer['email'] : '';
+                    $link = isset($signer['sign_url']) ? $signer['sign_url'] : '';
+                    $mens = str_replace('{nome}',$nome,$temm);
                     $mens = str_replace('{nome_doc}',$nome_doc,$mens);
                     $mens = str_replace('{link}',$link,$mens);
                     $mens = str_replace('{app}',$app,$mens);
+                    $ret['signer'][$k]['name'] = $nome;
+                    $ret['signer'][$k]['email'] = $email;
+                    $ret['signer'][$k]['nome_doc'] = $nome_doc;
+                    $ret['signer'][$k]['link'] = $link;
+                    // $ret['signer'][$k]['name'] = $nome;
                     //Ver se enviar com o telefone ou o id do usuario..
-                    // dd($mens,$email);
+                    // dump($mens,$email,$link);
                     // $email = $request->get('email') ? $request->get('email') : 'ger.maisaqui1@gmail.com';
-                    $ret = (new ZapguruController)->criar_chat(['email'=>$email,'text'=>$mens]);
+                    $ret['signer'][$k]['criar_chat'] = (new ZapguruController)->criar_chat(['email'=>$email,'text'=>$mens]);
                     //Registrar um log
                     Log::info('enviar_link_assinatura para o zapguru:', $ret);
                 }
